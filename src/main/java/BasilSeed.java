@@ -12,9 +12,9 @@ public class BasilSeed {
         */;
         switch (inputString){
             case "list":
-                for (String s : inputArray) {
-                    if (s == null) break;
-                    System.out.println(s);
+                for (int i = 0; i < inputArray.length; i++) {
+                    if (inputArray[i] == null) break;
+                    System.out.println(i+1 +". " + inputArray[i]);
                 }
                 break;
             default:
