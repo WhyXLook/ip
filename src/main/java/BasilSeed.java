@@ -1,10 +1,15 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class BasilSeed {
     // String[] userInputs = new String[100];
 
+    // TODO Change String[] to ArrayList<String> and then finally ArrayList<Task>
+    //  like this don't need check for null or empty string already. since its dynamic.
+    //  also remember to do < ? extends Task > i.e. ArrayList< ? extends Task> in the commandParser parameter
 
-    public static void commandParser (String inputString, String[] inputArray){
+
+    public static void commandParser (String inputString, ArrayList<String> inputList){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in array as needed by the command.
@@ -12,17 +17,13 @@ public class BasilSeed {
         */;
         switch (inputString){
             case "list":
-                for (int i = 0; i < inputArray.length; i++) {
-                    if (inputArray[i] == null) break;
-                    System.out.println(i+1 +". " + inputArray[i]);
+                for (int i = 0; i < inputList.size(); i++) {
+                    System.out.println(i+1 + ". " + inputList.get(i));
                 }
                 break;
             default:
-                for (int i = 0; i < inputArray.length; i++) {
-                    if (inputArray[i] == null || inputArray[i].isEmpty()) {
-                        inputArray[i] = inputString;
-                        break;
-                    }
+                if (inputString != null && !inputString.isEmpty()) {
+                    inputList.add(inputString);
                 }
                 String outMsg = "____________________________________________________________\n" +
                         "added: " + inputString + "\n" +
@@ -38,13 +39,13 @@ public class BasilSeed {
                 " What can I do for you?\n" +
                 "____________________________________________________________\n";
         System.out.println(outMsg);
-        String[] userInputArray = new String[100];
+        ArrayList<String> userInputList = new ArrayList<>();
         // Use of scanner to get user input came from https://stackoverflow.com/questions/5287538/how-to-get-the-user-input-in-java
         Scanner reader = new Scanner(System.in);
         System.out.println("Enter a string: ");
         String userInput = reader.nextLine();
         for(;!userInput.equals("bye"); userInput = reader.nextLine()){
-            commandParser(userInput, userInputArray);
+            commandParser(userInput, userInputList);
         }
         System.out.println("""
                     ____________________________________________________________
