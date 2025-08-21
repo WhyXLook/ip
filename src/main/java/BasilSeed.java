@@ -23,7 +23,7 @@ public class BasilSeed {
             case "list":
                 System.out.println("____________________________________________________________");
                 for (int i = 0; i < inputList.size(); i++) {
-                    System.out.println(i+1 + ".[" + inputList.get(i).getStatusIcon() + "]" + inputList.get(i));
+                    System.out.println(i+1 + "." + inputList.get(i));
                 }
                 System.out.println("____________________________________________________________");
                 break;
@@ -32,7 +32,7 @@ public class BasilSeed {
                 inputList.get(index).setDone(true);
                 outMsg = "____________________________________________________________\n" +
                         "Nice! I've marked this task as done:\n" +
-                        "[X] " + inputList.get(index) + "\n" +
+                        inputList.get(index) + "\n" +
                         "____________________________________________________________\n";
                 System.out.println(outMsg);
                 break;
@@ -41,7 +41,7 @@ public class BasilSeed {
                 inputList.get(index).setDone(false);
                 outMsg = "____________________________________________________________\n" +
                         "OK, I've marked this task as not done yet:\n" +
-                        "[] " + inputList.get(index) + "\n" +
+                        inputList.get(index) + "\n" +
                         "____________________________________________________________\n";
                 System.out.println(outMsg);
                 break;
