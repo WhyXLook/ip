@@ -9,23 +9,47 @@ public class BasilSeed {
     //  also remember to do < ? extends Task > i.e. ArrayList< ? extends Task> in the commandParser parameter
 
 
-    public static void commandParser (String inputString, ArrayList<String> inputList){
+    public static void commandParser (String inputString, ArrayList<Task> inputList){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
-        Modify the passed in array as needed by the command.
-        A null variable marks the end of the array while a empty string marks a deleted one.
+        Modify the passed in arrayList as needed by the command.
+        Separated by the space, the first word is the command while the second word is the argument
         */;
-        switch (inputString){
+        String[] inputWords = inputString.split(" ");
+        String command = inputWords[0];
+        String outMsg = "";
+        int index = -1;
+        switch (command){
             case "list":
+                System.out.println("____________________________________________________________");
                 for (int i = 0; i < inputList.size(); i++) {
-                    System.out.println(i+1 + ". " + inputList.get(i));
+                    System.out.println(i+1 + ".[" + inputList.get(i).getStatusIcon() + "]" + inputList.get(i));
                 }
+                System.out.println("____________________________________________________________");
+                break;
+            case "mark":
+                index = Integer.parseInt(inputWords[1]) - 1;
+                inputList.get(index).setDone(true);
+                outMsg = "____________________________________________________________\n" +
+                        "Nice! I've marked this task as done:\n" +
+                        "[X] " + inputList.get(index) + "\n" +
+                        "____________________________________________________________\n";
+                System.out.println(outMsg);
+                break;
+            case "unmark":
+                index = Integer.parseInt(inputWords[1]) - 1;
+                inputList.get(index).setDone(false);
+                outMsg = "____________________________________________________________\n" +
+                        "OK, I've marked this task as not done yet:\n" +
+                        "[] " + inputList.get(index) + "\n" +
+                        "____________________________________________________________\n";
+                System.out.println(outMsg);
                 break;
             default:
                 if (inputString != null && !inputString.isEmpty()) {
-                    inputList.add(inputString);
+                    inputList.add(new Task(inputString));
                 }
-                String outMsg = "____________________________________________________________\n" +
+                outMsg = "____________________________________________________________\n" +
                         "added: " + inputString + "\n" +
                         "____________________________________________________________\n";
                 System.out.println(outMsg);
@@ -39,7 +63,8 @@ public class BasilSeed {
                 " What can I do for you?\n" +
                 "____________________________________________________________\n";
         System.out.println(outMsg);
-        ArrayList<String> userInputList = new ArrayList<>();
+        // use of arraylist was from 2030
+        ArrayList<Task> userInputList = new ArrayList<>();
         // Use of scanner to get user input came from https://stackoverflow.com/questions/5287538/how-to-get-the-user-input-in-java
         Scanner reader = new Scanner(System.in);
         System.out.println("Enter a string: ");
