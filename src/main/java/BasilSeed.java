@@ -13,9 +13,9 @@ public class BasilSeed {
         // Use of scanner to get user input came from https://stackoverflow.com/questions/5287538/how-to-get-the-user-input-in-java
         Scanner reader = new Scanner(System.in);
         String userInput = reader.nextLine();
-        TaskManager taskManager = new TaskManager();
+        CommandParser commandParser = new CommandParser();
         for(;!userInput.equals("bye"); userInput = reader.nextLine()){
-            taskManager.commandParser(userInput);
+            commandParser.parse(userInput);
         }
         System.out.println("""
                 ____________________________________________________________
