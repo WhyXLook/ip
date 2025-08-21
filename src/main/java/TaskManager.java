@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,18 +32,14 @@ public class TaskManager {
         System.out.println(outMsg);
     }
 
-    public void addTask (String taskType, List<String> args){
+    public void addTask (String command, String taskName, ArrayList<String> args){
         String outMsg = "";
         Task task;
         String taskArg1;
         String taskArg2;
-        String taskName;
-        switch(taskType){
+        switch(command){
             case "todo":
                 // use of streams came from 2030
-                taskName = args.stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
                 task = new ToDo(taskName);
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
@@ -53,16 +50,7 @@ public class TaskManager {
                 System.out.println(outMsg);
                 break;
             case "deadline":
-                // discovery of indexof function came from https://www.baeldung.com/java-array-find-index
-                taskName = args.subList(0, args.indexOf("/by"))
-                        .stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
-                taskArg1 = args.subList(args.indexOf("/by") + 1, args.size())
-                        .stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
-                task = new Deadline(taskName, taskArg1);
+                task = new Deadline(taskName, args.get(0));
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
@@ -72,20 +60,7 @@ public class TaskManager {
                 System.out.println(outMsg);
                 break;
             case "event":
-                // discovery of indexof function came from https://www.baeldung.com/java-array-find-index
-                taskName = args.subList(0, args.indexOf("/from"))
-                        .stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
-                taskArg1 = args.subList(args.indexOf("/from") + 1, args.indexOf("/to"))
-                        .stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
-                taskArg2 = args.subList(args.indexOf("/to") + 1, args.size())
-                        .stream()
-                        .reduce((x,y) -> x + " " + y)
-                        .orElse("");
-                task = new Event(taskName, taskArg1, taskArg2);
+                task = new Event(taskName, args.get(0), args.get(1));
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
