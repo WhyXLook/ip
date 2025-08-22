@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandParser {
+public class InputParser {
     private TaskManager taskManager = new TaskManager();
 
     private void setMark(List<String> wordsList, boolean mark){
