@@ -11,6 +11,10 @@ public class TaskManager {
         System.out.println("____________________________________________________________");
     }
 
+    public boolean indexOutOfBounds(int index){
+        return index < 0 || index > this.tasks.size();
+    }
+
     public void setTaskDone (int index, boolean done){
         this.tasks.get(index).setDone(done);
         String outMsg;

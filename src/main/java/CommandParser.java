@@ -16,7 +16,7 @@ public class CommandParser {
             return;
         }
         try {
-            index = Integer.parseInt(wordsList.get(1)) - 1;
+            index = Integer.parseInt(wordsList.get(1));
         }
         catch (NumberFormatException e) {
             outMsg = "____________________________________________________________\n" +
@@ -25,14 +25,14 @@ public class CommandParser {
             System.out.println(outMsg);
             return;
         }
-        if (index <= 0) {
+        if (this.taskManager.indexOutOfBounds(index)) {
             outMsg = "____________________________________________________________\n" +
-                    "Invalid Index! Has to be more than 0\n" +
+                    "Index out of bounds! Has to be more than zero and equal or less than task list size!\n" +
                     "____________________________________________________________\n";
             System.out.println(outMsg);
         }
         else {
-            this.taskManager.setTaskDone(index, mark);
+            this.taskManager.setTaskDone(index - 1, mark);
         }
     }
 
@@ -163,7 +163,7 @@ public class CommandParser {
                     return;
                 }
                 try {
-                    index = Integer.parseInt(wordsList.get(1)) - 1;
+                    index = Integer.parseInt(wordsList.get(1));
                 }
                 catch (NumberFormatException e) {
                     outMsg = "____________________________________________________________\n" +
@@ -172,14 +172,14 @@ public class CommandParser {
                     System.out.println(outMsg);
                     return;
                 }
-                if (index <= 0) {
+                if (this.taskManager.indexOutOfBounds(index)) {
                     outMsg = "____________________________________________________________\n" +
-                            "Invalid Index! Has to be more than 0\n" +
+                            "Index out of bounds! Has to be more than zero and equal or less than task list size!\n" +
                             "____________________________________________________________\n";
                     System.out.println(outMsg);
                 }
                 else {
-                    this.taskManager.deleteTask(index);
+                    this.taskManager.deleteTask(index - 1);
                 }
                 break;
             default:
