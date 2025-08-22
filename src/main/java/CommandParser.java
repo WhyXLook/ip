@@ -13,16 +13,26 @@ public class CommandParser {
                     "Wrong number of arguments. mark should have 1 argument. \n" +
                     "____________________________________________________________\n";
             System.out.println(outMsg);
+            return;
         }
-        index = Integer.parseInt(wordsList.get(1)) - 1;
-        if (index > 0) {
-            this.taskManager.setTaskDone(index, mark);
+        try {
+            index = Integer.parseInt(wordsList.get(1)) - 1;
         }
-        else {
+        catch (NumberFormatException e) {
+            outMsg = "____________________________________________________________\n" +
+                    "Argument is not a number! \nExample usage: mark 2 \n" +
+                    "____________________________________________________________\n";
+            System.out.println(outMsg);
+            return;
+        }
+        if (index <= 0) {
             outMsg = "____________________________________________________________\n" +
                     "Invalid Index! Has to be more than 0\n" +
                     "____________________________________________________________\n";
             System.out.println(outMsg);
+        }
+        else {
+            this.taskManager.setTaskDone(index, mark);
         }
     }
 
@@ -143,6 +153,34 @@ public class CommandParser {
                         .orElse("");
                 argsList.add(taskArg);
                 this.taskManager.addTask(command, taskName, argsList);
+                break;
+            case "delete":
+                if (wordsList.size() < 2) {
+                    outMsg = "____________________________________________________________\n" +
+                            "Wrong number of arguments. delete should have 1 argument. \n" +
+                            "____________________________________________________________\n";
+                    System.out.println(outMsg);
+                    return;
+                }
+                try {
+                    index = Integer.parseInt(wordsList.get(1)) - 1;
+                }
+                catch (NumberFormatException e) {
+                    outMsg = "____________________________________________________________\n" +
+                            "Argument is not a number! \nExample usage: delete 2 \n" +
+                            "____________________________________________________________\n";
+                    System.out.println(outMsg);
+                    return;
+                }
+                if (index <= 0) {
+                    outMsg = "____________________________________________________________\n" +
+                            "Invalid Index! Has to be more than 0\n" +
+                            "____________________________________________________________\n";
+                    System.out.println(outMsg);
+                }
+                else {
+                    this.taskManager.deleteTask(index);
+                }
                 break;
             default:
                 outMsg = "____________________________________________________________\n" +

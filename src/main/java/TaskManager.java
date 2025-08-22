@@ -1,7 +1,4 @@
-import java.lang.reflect.Array;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TaskManager {
     private ArrayList<Task> tasks = new ArrayList<>();
@@ -70,6 +67,18 @@ public class TaskManager {
                 System.out.println(outMsg);
                 break;
         }
+    }
+
+    public void deleteTask (int index){
+        Task task = tasks.get(index);
+        // .remove came from javadocs and https://www.w3schools.com/java/ref_arraylist_remove.asp
+        this.tasks.remove(index);
+        String outMsg = "____________________________________________________________\n" +
+                "Noted. I've removed this task:\n" +
+                task + "\n" +
+                "Now you have " + this.tasks.size() + " tasks in the list.\n" +
+                "____________________________________________________________\n";
+        System.out.println(outMsg);
     }
 
 }
