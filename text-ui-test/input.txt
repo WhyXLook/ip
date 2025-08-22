@@ -1,8 +1,12 @@
 hihi
+mark 1
+unmark 1
 todo borrow book
 todo
+mark 2
 mark 1
 list
+unmark 2
 unmark 1
 deadline
 deadline return book
