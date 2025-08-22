@@ -12,7 +12,7 @@ public class TaskManager {
     }
 
     public boolean indexOutOfBounds(int index){
-        return index < 0 || index > this.tasks.size();
+        return index <= 0 || index > this.tasks.size();
     }
 
     public void setTaskDone (int index, boolean done){
