@@ -18,3 +18,6 @@ event project meeting /from /to
 event project meeting /from mon 2pm /to
 event project meeting /from Mon 2pm /to 4pm
 list
+delete
+delete 3
+list
