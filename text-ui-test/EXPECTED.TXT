@@ -27,6 +27,10 @@ Wrong number of arguments. todo should have 1 argument.
 ____________________________________________________________
 
 ____________________________________________________________
+Wrong number of arguments. mark should have 1 argument.
+____________________________________________________________
+
+____________________________________________________________
 Index out of bounds! Has to be more than zero and equal or less than task list size!
 ____________________________________________________________
 
@@ -52,19 +56,19 @@ OK, I've marked this task as not done yet:
 ____________________________________________________________
 
 ____________________________________________________________
-No '/by' detected. /by is a required argument for deadlines.
+No '/by' detected. /by is a required argument for deadline.
 ____________________________________________________________
 
 ____________________________________________________________
-No '/by' detected. /by is a required argument for deadlines.
+No '/by' detected. /by is a required argument for deadline.
 ____________________________________________________________
 
 ____________________________________________________________
-No task name detected. Provide one between 'deadline' and '/by' as an argument.
+No task name detected. Provide one between the command deadline and /by as an argument.
 ____________________________________________________________
 
 ____________________________________________________________
-No deadline date detected. Provide one after '/by' as an argument.
+No deadline date detected. Provide one after /by as an argument.
 ____________________________________________________________
 
 ____________________________________________________________
@@ -74,31 +78,47 @@ Now you have 2 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
-'/from' and '/to' are not satisfied. Make sure to include them both as argumentss.
+No '/from' detected. /from is a required argument for event.
 ____________________________________________________________
 
 ____________________________________________________________
-'/from' and '/to' are not satisfied. Make sure to include them both as argumentss.
+No '/from' detected. /from is a required argument for event.
 ____________________________________________________________
 
 ____________________________________________________________
-'/from' and '/to' are not satisfied. Make sure to include them both as argumentss.
+No '/to' detected. /to is a required argument for event.
 ____________________________________________________________
 
 ____________________________________________________________
-'/from' should be before '/to'
+No '/to' detected. /to is a required argument for event.
 ____________________________________________________________
 
 ____________________________________________________________
-No task name detected. Provide one between 'event' and '/from' as an argument.
+/from should be before /to
+Keywords in order: /from /to
+
+____________________________________________________________
+No task name detected. Provide one between the command event and /from as an argument.
 ____________________________________________________________
 
 ____________________________________________________________
-Date arguments for '/from' and '/to' not satisfied. Make sure to include them for both.
+No event date detected. Provide one after /from as an argument.
 ____________________________________________________________
 
 ____________________________________________________________
-Date arguments for '/from' and '/to' not satisfied. Make sure to include them for both.
+No event date detected. Provide one after /to as an argument.
+____________________________________________________________
+
+____________________________________________________________
+No task name detected. Provide one between the command event and /from as an argument.
+____________________________________________________________
+
+____________________________________________________________
+No task name detected. Provide one between the command event and /from as an argument.
+____________________________________________________________
+
+____________________________________________________________
+No event date detected. Provide one after /from as an argument.
 ____________________________________________________________
 
 ____________________________________________________________
