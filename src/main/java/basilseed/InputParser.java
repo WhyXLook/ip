@@ -1,3 +1,5 @@
+package basilseed;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +10,11 @@ import java.util.List;
 //  just pass in command.
 
 public class InputParser {
-    private TaskManager taskManager = new TaskManager();
+    private TaskManager taskManager;
+
+    public InputParser(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
 
     private boolean wrongArgNum (List<String> wordsList, int argNum){
         if (wordsList.size() < argNum) {

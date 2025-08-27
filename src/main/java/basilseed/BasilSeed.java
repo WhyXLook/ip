@@ -1,3 +1,5 @@
+package basilseed;
+
 import java.util.Scanner;
 
 public class BasilSeed {
@@ -13,7 +15,8 @@ public class BasilSeed {
         // Use of scanner to get user input came from https://stackoverflow.com/questions/5287538/how-to-get-the-user-input-in-java
         Scanner reader = new Scanner(System.in);
         String userInput = reader.nextLine();
-        InputParser inputParser = new InputParser();
+        TaskManager taskManager = new TaskManager();
+        InputParser inputParser = new InputParser(taskManager);
         for(;!userInput.equals("bye"); userInput = reader.nextLine()){
             inputParser.parse(userInput);
         }

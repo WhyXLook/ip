@@ -1,3 +1,10 @@
+package basilseed;
+
+import basilseed.task.Deadline;
+import basilseed.task.Event;
+import basilseed.task.Task;
+import basilseed.task.ToDo;
+
 import java.util.ArrayList;
 
 public class TaskManager {

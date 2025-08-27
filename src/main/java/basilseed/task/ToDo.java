@@ -1,4 +1,6 @@
-public class ToDo extends Task{
+package basilseed.task;
+
+public class ToDo extends Task {
     public ToDo(String name){
         super(name);
     }
