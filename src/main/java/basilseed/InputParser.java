@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// TODO: All functions with // wordsList.get(0) would give the command. We are assuming command has already been verified.
-//  just pass in command.
-
 public class InputParser {
     private TaskManager taskManager;
 
@@ -26,9 +23,7 @@ public class InputParser {
         } else if (inputString.matches("\\[D\\]\\[.*\\]")){
             return "deadline";
         }
-
         return "";
-
     }
 
     private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
