@@ -161,7 +161,7 @@ public class InputParser {
         return taskArg;
     }
 
-    private void setMark(List<String> wordsList, boolean mark, String command){
+    private void setMark(List<String> wordsList, boolean mark, String command, boolean isSilent){
         // We are assuming command has already been verified.
         String outMsg = "";
         int index = -1;
@@ -176,11 +176,11 @@ public class InputParser {
             return;
         }
         else {
-            this.taskManager.setTaskDone(index - 1, mark);
+            this.taskManager.setTaskDone(index - 1, mark, isSilent);
         }
     }
 
-    public void parse(String inputString){
+    public void parse(String inputString, boolean isSilent){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in arrayList as needed by the command.
@@ -201,17 +201,17 @@ public class InputParser {
                 this.taskManager.listTasks();
                 break;
             case "mark":
-                setMark(wordsList, true, command);
+                setMark(wordsList, true, command, isSilent);
                 break;
             case "unmark":
-                setMark(wordsList, false, command);
+                setMark(wordsList, false, command, isSilent);
                 break;
             case "todo":
                 if (wrongArgNum(wordsList, 2, command)) {
                     break;
                 }
                 taskName = getTaskName(wordsList, "");
-                this.taskManager.addTask(command, taskName, argsList, isMarked);
+                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent);
                 break;
             case "deadline":
                 if (argKeywordNotFound(wordsList, "/by", command)) {
@@ -228,7 +228,7 @@ public class InputParser {
                 taskArg = getArg(wordsList, "/by","" );
 
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList, isMarked);
+                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent);
                 break;
             case "event":
                 if (argKeywordNotFound(wordsList, "/from", command) ||
@@ -250,7 +250,7 @@ public class InputParser {
                 argsList.add(taskArg);
                 taskArg = getArg(wordsList, "/to","");
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList,isMarked);
+                this.taskManager.addTask(command, taskName, argsList,isMarked, isSilent);
                 break;
             case "delete":
                 if (wrongArgNum(wordsList, 2, command)) {
@@ -264,7 +264,7 @@ public class InputParser {
                     break;
                 }
                 else {
-                    this.taskManager.deleteTask(index - 1);
+                    this.taskManager.deleteTask(index - 1, isSilent);
                 }
                 break;
             default:

@@ -13,7 +13,7 @@ public class BasilSeed {
         Storage storage = new Storage();
         ArrayList<String> taskStrings = storage.read();
         for (String taskString : taskStrings){
-            inputParser.parse(taskString);
+            inputParser.parse(taskString, true);
         }
 
     }
@@ -32,7 +32,7 @@ public class BasilSeed {
         Scanner reader = new Scanner(System.in);
         String userInput = reader.nextLine();
         for(;!userInput.equals("bye"); userInput = reader.nextLine()){
-            inputParser.parse(userInput);
+            inputParser.parse(userInput, false);
         }
         System.out.println("""
                 ____________________________________________________________

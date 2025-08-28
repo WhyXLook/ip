@@ -32,7 +32,7 @@ public class TaskManager {
         return index <= 0 || index > this.tasks.size();
     }
 
-    public void setTaskDone (int index, boolean done){
+    public void setTaskDone (int index, boolean done, boolean isSilent){
         this.tasks.get(index).setDone(done);
         updateStorage();
         String outMsg;
@@ -48,10 +48,13 @@ public class TaskManager {
                     this.tasks.get(index) + "\n" +
                     "____________________________________________________________\n";
         }
-        System.out.println(outMsg);
+        if (!isSilent){
+            System.out.println(outMsg);
+        }
+
     }
 
-    public void addTask (String command, String taskName, ArrayList<String> args, boolean isDone){
+    public void addTask (String command, String taskName, ArrayList<String> args, boolean isDone, boolean isSilent){
         String outMsg = "";
         Task task;
         String taskArg1;
@@ -67,7 +70,9 @@ public class TaskManager {
                         task + "\n" +
                         "Now you have " + this.tasks.size() + " tasks in the list.\n" +
                         "____________________________________________________________\n";
-                System.out.println(outMsg);
+                if (!isSilent){
+                    System.out.println(outMsg);
+                }
                 break;
             case "deadline":
                 task = new Deadline(taskName, args.get(0));
@@ -79,7 +84,9 @@ public class TaskManager {
                         task + "\n" +
                         "Now you have " + this.tasks.size() + " tasks in the list.\n" +
                         "____________________________________________________________\n";
-                System.out.println(outMsg);
+                if (!isSilent){
+                    System.out.println(outMsg);
+                }
                 break;
             case "event":
                 task = new Event(taskName, args.get(0), args.get(1));
@@ -91,12 +98,14 @@ public class TaskManager {
                         task + "\n" +
                         "Now you have " + this.tasks.size() + " tasks in the list.\n" +
                         "____________________________________________________________\n";
-                System.out.println(outMsg);
+                if (!isSilent){
+                    System.out.println(outMsg);
+                }
                 break;
         }
     }
 
-    public void deleteTask (int index){
+    public void deleteTask (int index, boolean isSilent){
         Task task = tasks.get(index);
         // .remove came from javadocs and https://www.w3schools.com/java/ref_arraylist_remove.asp
         this.tasks.remove(index);
@@ -106,7 +115,9 @@ public class TaskManager {
                 task + "\n" +
                 "Now you have " + this.tasks.size() + " tasks in the list.\n" +
                 "____________________________________________________________\n";
-        System.out.println(outMsg);
+        if (!isSilent){
+            System.out.println(outMsg);
+        }
     }
 
 }
