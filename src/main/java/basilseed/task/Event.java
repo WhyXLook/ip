@@ -1,17 +1,21 @@
 package basilseed.task;
 
-public class Event extends Task {
-    protected String from;
-    protected String to;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-    public Event(String name, String from, String to) {
+public class Event extends Task {
+    protected LocalDate from;
+    protected LocalDate to;
+
+    public Event(String name, String from, String to, String dateType) {
         super(name);
-        this.from = from;
-        this.to = to;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);
+        this.from = LocalDate.parse(from, formatter);
+        this.to = LocalDate.parse(to, formatter);
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " /from " + from + " /to " + to;
+        return "[E]" + super.toString() + " /from " + formatDate(from) + " /to " + formatDate(to);
     }
 }
