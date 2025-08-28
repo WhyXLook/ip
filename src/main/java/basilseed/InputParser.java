@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// TODO: extract the other common methods out to become functions
-//  now need to do a new "getArg" function
 // TODO: All functions with // wordsList.get(0) would give the command. We are assuming command has already been verified.
 //  just pass in command.
 
@@ -16,11 +14,29 @@ public class InputParser {
         this.taskManager = taskManager;
     }
 
-    private boolean wrongArgNum (List<String> wordsList, int argNum){
+    private String getCommand (List<String> commandList,String inputString ){
+        if (commandList.contains(inputString)){
+            return inputString;
+        }
+
+        if (inputString.matches("\\[T\\]\\[.*\\]")){
+            return "todo";
+        } else if (inputString.matches("\\[E\\]\\[.*\\]")){
+            return "event";
+        } else if (inputString.matches("\\[D\\]\\[.*\\]")){
+            return "deadline";
+        }
+
+        return "";
+
+    }
+
+    private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
+        // We are assuming command has already been verified.
         if (wordsList.size() < argNum) {
             String outMsg = String.format("____________________________________________________________\n" +
                     "Wrong number of arguments. %s should have %d argument. \n" +
-                    "____________________________________________________________\n", wordsList.get(0), argNum - 1);
+                    "____________________________________________________________\n", command, argNum - 1);
             System.out.println(outMsg);
             return true;
         }
@@ -69,25 +85,25 @@ public class InputParser {
         return taskName;
     }
 
-    private boolean taskNameNotFound(List<String> wordsList, String firstArgKeyword){
+    private boolean taskNameNotFound(List<String> wordsList, String firstArgKeyword, String command){
         // discovery of indexof function came from 2030 and https://www.baeldung.com/java-array-find-index
-        // wordsList.get(0) would give the command. We are assuming command has already been verified.
+        // We are assuming command has already been verified.
         if (wordsList.indexOf(firstArgKeyword) == 1) {
             String outMsg = String.format("____________________________________________________________\n" +
                     "No task name detected. Provide one between the command %s and %s as an argument. \n" +
-                    "____________________________________________________________\n", wordsList.get(0), firstArgKeyword);
+                    "____________________________________________________________\n", command, firstArgKeyword);
             System.out.println(outMsg);
             return true;
         }
         return false;
     }
 
-    private boolean argKeywordNotFound(List<String> wordsList, String argKeyword ){
-        // wordsList.get(0) would give the command. We are assuming command has already been verified.
+    private boolean argKeywordNotFound(List<String> wordsList, String argKeyword, String command){
+        // We are assuming command has already been verified.
         if (!wordsList.contains(argKeyword)) {
             String outMsg = String.format("____________________________________________________________\n" +
                     "No '%s' detected. %s is a required argument for %s. \n" +
-                    "____________________________________________________________\n", argKeyword, argKeyword, wordsList.get(0));
+                    "____________________________________________________________\n", argKeyword, argKeyword, command);
             System.out.println(outMsg);
             return true;
         }
@@ -116,15 +132,15 @@ public class InputParser {
     }
 
     private boolean noArgSupplied(List<String> wordsList, List<String> argKeywordList,
-                                  String argKeyword, String argType){
-        // wordsList.get(0) would give the command. We are assuming command has already been verified.
+                                  String argKeyword, String argType, String command){
+        // We are assuming command has already been verified.
         if ( (wordsList.indexOf(argKeyword) + 1 == wordsList.size()) ||
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
             String outMsg = String.format("____________________________________________________________\n" +
                     "No %s %s detected. Provide one after %s as an argument. \n" +
                     "____________________________________________________________\n",
-                    wordsList.get(0), argType, argKeyword);
+                    command, argType, argKeyword);
             System.out.println(outMsg);
             return true;
         }
@@ -143,13 +159,14 @@ public class InputParser {
         return taskArg;
     }
 
-    private void setMark(List<String> wordsList, boolean mark){
+    private void setMark(List<String> wordsList, boolean mark, String command){
+        // We are assuming command has already been verified.
         String outMsg = "";
         int index = -1;
-        if (wrongArgNum(wordsList, 2)){
+        if (wrongArgNum(wordsList, 2, command)){
             return;
         }
-        if (argNotInteger(wordsList.get(0),wordsList)){
+        if (argNotInteger(command,wordsList)){
             return;
         }
         index = Integer.parseInt(wordsList.get(1));
@@ -170,7 +187,7 @@ public class InputParser {
         // conversion from string arrays to List string https://stackoverflow.com/questions/2607289/converting-array-to-list-in-java
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         ArrayList<String> argsList = new ArrayList<>();
-        String command = wordsList.get(0);
+        String command = getCommand(wordsList, wordsList.get(0));
         String outMsg = "";
         String taskName = "";
         String taskArg = "";
@@ -180,27 +197,27 @@ public class InputParser {
                 this.taskManager.listTasks();
                 break;
             case "mark":
-                setMark(wordsList, true);
+                setMark(wordsList, true, command);
                 break;
             case "unmark":
-                setMark(wordsList, false);
+                setMark(wordsList, false, command);
                 break;
             case "todo":
-                if (wrongArgNum(wordsList, 2)) {
+                if (wrongArgNum(wordsList, 2, command)) {
                     break;
                 }
                 taskName = getTaskName(wordsList, "");
                 this.taskManager.addTask(command, taskName, argsList);
                 break;
             case "deadline":
-                if (argKeywordNotFound(wordsList, "/by")){
+                if (argKeywordNotFound(wordsList, "/by", command)) {
                     break;
                 }
-                if (taskNameNotFound(wordsList,"/by")){
+                if (taskNameNotFound(wordsList,"/by", command)) {
                     break;
                 }
                 if (noArgSupplied(wordsList, List.of("/by"),
-                        "/by", "date")){
+                        "/by", "date", command)) {
                     break;
                 }
                 taskName = getTaskName(wordsList, "/by");
@@ -210,18 +227,18 @@ public class InputParser {
                 this.taskManager.addTask(command, taskName, argsList);
                 break;
             case "event":
-                if (argKeywordNotFound(wordsList, "/from") ||
-                        argKeywordNotFound(wordsList, "/to")){
+                if (argKeywordNotFound(wordsList, "/from", command) ||
+                        argKeywordNotFound(wordsList, "/to", command)){
                     break;
                 }
-                if (taskNameNotFound(wordsList, "/from")) {
+                if (taskNameNotFound(wordsList, "/from", command)) {
                     break;
                 }
                 if(argKeywordOrderWrong(wordsList, List.of("/from", "/to"))){
                     break;
                 }
-                if(noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date")
-                || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date")){
+                if(noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
+                || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)){
                    break;
                 }
                 taskName = getTaskName(wordsList, "/from");
@@ -232,10 +249,10 @@ public class InputParser {
                 this.taskManager.addTask(command, taskName, argsList);
                 break;
             case "delete":
-                if (wrongArgNum(wordsList, 2)) {
+                if (wrongArgNum(wordsList, 2, command)) {
                     break;
                 }
-                if (argNotInteger(wordsList.get(0),wordsList)){
+                if (argNotInteger(command,wordsList)){
                     break;
                 }
                 index = Integer.parseInt(wordsList.get(1));
