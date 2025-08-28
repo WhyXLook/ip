@@ -10,6 +10,16 @@ import java.util.ArrayList;
 public class TaskManager {
     private ArrayList<Task> tasks = new ArrayList<>();
 
+    private void updateStorage(){
+        ArrayList<String> outputString = new ArrayList<>();
+        for (Task task : tasks){
+            String taskString = task.toString();
+            outputString.add(taskString);
+        }
+        Storage storage = new Storage();
+        storage.write(outputString);
+    }
+
     public void listTasks(){
         System.out.println("____________________________________________________________");
         for (int i = 0; i < this.tasks.size(); i++) {
@@ -24,6 +34,7 @@ public class TaskManager {
 
     public void setTaskDone (int index, boolean done){
         this.tasks.get(index).setDone(done);
+        updateStorage();
         String outMsg;
         if (done){
             outMsg = "____________________________________________________________\n" +
@@ -50,6 +61,7 @@ public class TaskManager {
                 task = new ToDo(taskName);
                 task.setDone(isDone);
                 this.tasks.add(task);
+                updateStorage();
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
                         task + "\n" +
@@ -61,6 +73,7 @@ public class TaskManager {
                 task = new Deadline(taskName, args.get(0));
                 task.setDone(isDone);
                 this.tasks.add(task);
+                updateStorage();
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
                         task + "\n" +
@@ -72,6 +85,7 @@ public class TaskManager {
                 task = new Event(taskName, args.get(0), args.get(1));
                 task.setDone(isDone);
                 this.tasks.add(task);
+                updateStorage();
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
                         task + "\n" +
@@ -86,6 +100,7 @@ public class TaskManager {
         Task task = tasks.get(index);
         // .remove came from javadocs and https://www.w3schools.com/java/ref_arraylist_remove.asp
         this.tasks.remove(index);
+        updateStorage();
         String outMsg = "____________________________________________________________\n" +
                 "Noted. I've removed this task:\n" +
                 task + "\n" +
