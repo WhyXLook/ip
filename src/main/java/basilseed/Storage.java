@@ -1,17 +1,16 @@
 package basilseed;
 
-import basilseed.task.Task;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Storage {
-    private static final String DEFAULT_FILE_PATH = "./data/tasks.txt";
+    private static final String DEFAULT_FILE_PATH = "./ip/src/main/java/basilseed/data/tasks.txt";
     private Path path;
 
     private static void createFileIfNotExists(String filePath) {
