@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class Storage {
-    private static final String DEFAULT_FILE_PATH = "/data/tasks.txt";
+    private static final String DEFAULT_FILE_PATH = "./data/tasks.txt";
     private Path path;
 
     private static void createFileIfNotExists(String filePath) {
