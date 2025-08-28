@@ -187,7 +187,8 @@ public class InputParser {
         // conversion from string arrays to List string https://stackoverflow.com/questions/2607289/converting-array-to-list-in-java
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         ArrayList<String> argsList = new ArrayList<>();
-        String command = getCommand(wordsList, wordsList.get(0));
+        String command = getCommand(List.of("list", "mark", "unmark", "todo", "deadline", "event", "delete"),
+                wordsList.get(0));
         String outMsg = "";
         String taskName = "";
         String taskArg = "";
