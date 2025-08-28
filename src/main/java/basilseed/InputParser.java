@@ -26,6 +26,13 @@ public class InputParser {
         return "";
     }
 
+    private boolean marked (String inputString){
+        if (inputString.matches("\\[.\\]\\[X\\]")){
+            return true;
+        }
+        return false;
+    }
+
     private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
         // We are assuming command has already been verified.
         if (wordsList.size() < argNum) {
