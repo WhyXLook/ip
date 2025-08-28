@@ -191,6 +191,7 @@ public class InputParser {
         ArrayList<String> argsList = new ArrayList<>();
         String command = getCommand(List.of("list", "mark", "unmark", "todo", "deadline", "event", "delete"),
                 wordsList.get(0));
+        boolean isMarked = marked(wordsList.get(0));
         String outMsg = "";
         String taskName = "";
         String taskArg = "";
@@ -210,7 +211,7 @@ public class InputParser {
                     break;
                 }
                 taskName = getTaskName(wordsList, "");
-                this.taskManager.addTask(command, taskName, argsList);
+                this.taskManager.addTask(command, taskName, argsList, isMarked);
                 break;
             case "deadline":
                 if (argKeywordNotFound(wordsList, "/by", command)) {
@@ -227,7 +228,7 @@ public class InputParser {
                 taskArg = getArg(wordsList, "/by","" );
 
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList);
+                this.taskManager.addTask(command, taskName, argsList, isMarked);
                 break;
             case "event":
                 if (argKeywordNotFound(wordsList, "/from", command) ||
@@ -249,7 +250,7 @@ public class InputParser {
                 argsList.add(taskArg);
                 taskArg = getArg(wordsList, "/to","");
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList);
+                this.taskManager.addTask(command, taskName, argsList,isMarked);
                 break;
             case "delete":
                 if (wrongArgNum(wordsList, 2, command)) {

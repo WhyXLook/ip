@@ -40,15 +40,15 @@ public class TaskManager {
         System.out.println(outMsg);
     }
 
-    public void addTask (String command, String taskName, ArrayList<String> args){
+    public void addTask (String command, String taskName, ArrayList<String> args, boolean isDone){
         String outMsg = "";
         Task task;
         String taskArg1;
         String taskArg2;
         switch(command){
             case "todo":
-                // use of streams came from 2030
                 task = new ToDo(taskName);
+                task.setDone(isDone);
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
@@ -59,6 +59,7 @@ public class TaskManager {
                 break;
             case "deadline":
                 task = new Deadline(taskName, args.get(0));
+                task.setDone(isDone);
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
@@ -69,6 +70,7 @@ public class TaskManager {
                 break;
             case "event":
                 task = new Event(taskName, args.get(0), args.get(1));
+                task.setDone(isDone);
                 this.tasks.add(task);
                 outMsg = "____________________________________________________________\n" +
                         "Got it. I've added this task:\n" +
