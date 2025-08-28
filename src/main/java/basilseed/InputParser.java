@@ -80,7 +80,7 @@ public class InputParser {
         else {
             index = wordsList.indexOf(argKeyword);
         }
-        String taskName = wordsList.subList(0, index)
+        String taskName = wordsList.subList(1, index)
                 .stream()
                 .reduce((x,y) -> x + " " + y)
                 .orElse("");
