@@ -54,7 +54,8 @@ public class TaskManager {
 
     }
 
-    public void addTask (String command, String taskName, ArrayList<String> args, boolean isDone, boolean isSilent){
+    public void addTask (String command, String taskName, ArrayList<String> args, boolean isDone, boolean isSilent,
+                         String dateType){
         String outMsg = "";
         Task task;
         String taskArg1;
@@ -75,7 +76,7 @@ public class TaskManager {
                 }
                 break;
             case "deadline":
-                task = new Deadline(taskName, args.get(0));
+                task = new Deadline(taskName, args.get(0), dateType);
                 task.setDone(isDone);
                 this.tasks.add(task);
                 updateStorage();
@@ -89,7 +90,7 @@ public class TaskManager {
                 }
                 break;
             case "event":
-                task = new Event(taskName, args.get(0), args.get(1));
+                task = new Event(taskName, args.get(0), args.get(1), dateType);
                 task.setDone(isDone);
                 this.tasks.add(task);
                 updateStorage();

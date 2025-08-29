@@ -1,10 +1,21 @@
 package basilseed;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
+import basilseed.task.Task;
+
 
 public class InputParser {
+    private static final String STORAGE_DATE_FORMAT = Task.STORAGE_DATE_FORMAT;
+    private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
+
     private TaskManager taskManager;
 
     public InputParser(TaskManager taskManager) {
@@ -123,8 +134,9 @@ public class InputParser {
             if (prevIndex >= index){
                 String outMsg = String.format("____________________________________________________________\n" +
                         "%s should be before %s \n" +
-                        "Keywords in order: ",argKeywordList.get(index), argKeywordList.get(prevIndex) );
-                outMsg = outMsg + String.join(" ", argKeywordList) + "\n";
+                        "Keywords in order: ",argKeywordList.get(index), argKeywordList.get(prevIndex)) ;
+                outMsg = outMsg + String.join(" ", argKeywordList) + "\n" +
+                        "____________________________________________________________\n";
                 System.out.println(outMsg);
                 return true;
             }
@@ -161,6 +173,29 @@ public class InputParser {
         return taskArg;
     }
 
+    private String validDateType (String dateString){
+        List<String> dateTypes = new ArrayList<>();
+        //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
+        //formatters.add(DateTimeFormatter.ofPattern(INPUT_DATE_FORMAT));
+        dateTypes.add(STORAGE_DATE_FORMAT);
+        dateTypes.add(INPUT_DATE_FORMAT);
+
+        for (String dateType : dateTypes) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);
+            try {
+                LocalDate date = LocalDate.parse(dateString, formatter);
+                return dateType;
+            } catch (DateTimeParseException e) {
+                // do nothing here, aka try next date format
+            }
+        }
+        String outMsg = String.format("____________________________________________________________\n" +
+                "Wrong date format! Use yyyy-mm-dd e.g. 2019-05-10 \n" +
+                "____________________________________________________________\n");
+        System.out.println(outMsg);
+        return "";
+    }
+
     private void setMark(List<String> wordsList, boolean mark, String command, boolean isSilent){
         // We are assuming command has already been verified.
         String outMsg = "";
@@ -195,6 +230,7 @@ public class InputParser {
         String outMsg = "";
         String taskName = "";
         String taskArg = "";
+        String dateType = "";
         int index = -1;
         switch (command){
             case "list":
@@ -211,7 +247,7 @@ public class InputParser {
                     break;
                 }
                 taskName = getTaskName(wordsList, "");
-                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent);
+                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
                 break;
             case "deadline":
                 if (argKeywordNotFound(wordsList, "/by", command)) {
@@ -226,9 +262,12 @@ public class InputParser {
                 }
                 taskName = getTaskName(wordsList, "/by");
                 taskArg = getArg(wordsList, "/by","" );
-
+                dateType = validDateType(taskArg);
+                if (Objects.equals(dateType, "")){
+                    break;
+                }
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent);
+                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
                 break;
             case "event":
                 if (argKeywordNotFound(wordsList, "/from", command) ||
@@ -247,10 +286,18 @@ public class InputParser {
                 }
                 taskName = getTaskName(wordsList, "/from");
                 taskArg = getArg(wordsList, "/from","/to" );
+                dateType = validDateType(taskArg);
+                if (Objects.equals(dateType, "")){
+                    break;
+                }
                 argsList.add(taskArg);
                 taskArg = getArg(wordsList, "/to","");
+                dateType = validDateType(taskArg);
+                if (Objects.equals(dateType, "")){
+                    break;
+                }
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList,isMarked, isSilent);
+                this.taskManager.addTask(command, taskName, argsList,isMarked, isSilent, dateType);
                 break;
             case "delete":
                 if (wrongArgNum(wordsList, 2, command)) {
