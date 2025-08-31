@@ -12,6 +12,7 @@ import java.util.Objects;
 import basilseed.task.Task;
 
 
+
 public class InputParser {
     private static final String STORAGE_DATE_FORMAT = Task.STORAGE_DATE_FORMAT;
     private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
@@ -46,10 +47,10 @@ public class InputParser {
 
     private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
         // We are assuming command has already been verified.
-        if (wordsList.size() < argNum) {
+        if (wordsList.size() <= argNum ) {
             String outMsg = String.format("____________________________________________________________\n" +
                     "Wrong number of arguments. %s should have %d argument. \n" +
-                    "____________________________________________________________\n", command, argNum - 1);
+                    "____________________________________________________________\n", command, argNum);
             System.out.println(outMsg);
             return true;
         }
@@ -200,7 +201,7 @@ public class InputParser {
         // We are assuming command has already been verified.
         String outMsg = "";
         int index = -1;
-        if (wrongArgNum(wordsList, 2, command)){
+        if (wrongArgNum(wordsList, 1, command)){
             return;
         }
         if (argNotInteger(command,wordsList)){
@@ -243,7 +244,7 @@ public class InputParser {
                 setMark(wordsList, false, command, isSilent);
                 break;
             case "todo":
-                if (wrongArgNum(wordsList, 2, command)) {
+                if (wrongArgNum(wordsList, 1, command)) {
                     break;
                 }
                 taskName = getTaskName(wordsList, "");
@@ -297,10 +298,10 @@ public class InputParser {
                     break;
                 }
                 argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList,isMarked, isSilent, dateType);
+                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
                 break;
             case "delete":
-                if (wrongArgNum(wordsList, 2, command)) {
+                if (wrongArgNum(wordsList, 1, command)) {
                     break;
                 }
                 if (argNotInteger(command,wordsList)){
