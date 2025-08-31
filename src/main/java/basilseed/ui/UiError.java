@@ -53,8 +53,13 @@ public class UiError extends Ui {
         super.displayMessage(outMsg);
     }
 
-    public void displayValidDateType (){
+    public void displayValidDateType(){
         String outMsg = "Wrong date format! Use yyyy-mm-dd e.g. 2019-05-10 \n";
+        super.displayMessage(outMsg);
+    }
+
+    public void displayInvalidCommand(){
+        String outMsg = "Woops, thats not a valid command. Try again! \n";
         super.displayMessage(outMsg);
     }
 
