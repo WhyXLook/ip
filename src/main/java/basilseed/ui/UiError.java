@@ -63,5 +63,10 @@ public class UiError extends Ui {
         super.displayMessage(outMsg);
     }
 
+    public void displayIoException(){
+        String outMsg = "\"Something went Wrong with IO. Check your permissions and file path!\n";
+        super.displayMessage(outMsg);
+    }
+
 
 }
