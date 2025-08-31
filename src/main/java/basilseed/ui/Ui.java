@@ -13,7 +13,7 @@ public abstract class Ui {
         this.isSilent = silent;
     }
 
-    protected void setSilent(boolean silent) {
+    public void setSilent(boolean silent) {
         this.isSilent = silent;
     }
 
