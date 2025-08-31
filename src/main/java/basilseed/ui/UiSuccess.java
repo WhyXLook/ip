@@ -20,11 +20,13 @@ public class UiSuccess extends Ui {
     }
 
     public void displayTaskMarked(String taskString, boolean isDone){
+        String outMsg = "";
         if(isDone){
-            displayMessage("Nice! I've marked this task as done:\n");
+            outMsg =  "Nice! I've marked this task as done: " + taskString + "\n";
         } else {
-            displayMessage("OK, I've marked this task as not done yet:\n");
+            outMsg = "OK, I've marked this task as not done yet: " + taskString + "\n";
         }
+        displayMessage(outMsg);
     }
 
     public void displayTaskAdded(String taskString, int totalTasks) {
