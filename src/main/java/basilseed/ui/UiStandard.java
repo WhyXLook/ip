@@ -16,7 +16,7 @@ public class UiStandard extends Ui {
     }
 
     public void displayFarewell() {
-        String farewell = "Bye. Hope to see you again soon!";
+        String farewell = "Bye. Hope to see you again soon! \n";
         super.displayMessage(farewell);
     }
 }
