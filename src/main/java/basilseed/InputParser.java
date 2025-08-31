@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 import basilseed.task.Task;
-
+import basilseed.ui.UiError;
 
 
 public class InputParser {
@@ -18,9 +18,11 @@ public class InputParser {
     private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
 
     private TaskManager taskManager;
+    private UiError uiError;
 
-    public InputParser(TaskManager taskManager) {
+    public InputParser(TaskManager taskManager, UiError uiError) {
         this.taskManager = taskManager;
+        this.uiError = uiError;
     }
 
     private String getCommand (List<String> commandList,String inputString ){
@@ -48,10 +50,7 @@ public class InputParser {
     private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
         // We are assuming command has already been verified.
         if (wordsList.size() <= argNum ) {
-            String outMsg = String.format("____________________________________________________________\n" +
-                    "Wrong number of arguments. %s should have %d argument. \n" +
-                    "____________________________________________________________\n", command, argNum);
-            System.out.println(outMsg);
+            this.uiError.displayWrongArgNum(command, argNum);
             return true;
         }
         return false;
@@ -62,10 +61,7 @@ public class InputParser {
             int index = Integer.parseInt(wordsList.get(1));
         }
         catch (NumberFormatException e) {
-            String outMsg = String.format("____________________________________________________________\n" +
-                    "Argument is not a number! \nExample usage: %s 2 \n" +
-                    "____________________________________________________________\n", command);
-            System.out.println(outMsg);
+            this.uiError.displayArgNotInteger(command);
             return true;
         }
         return false;
@@ -73,10 +69,7 @@ public class InputParser {
 
     private boolean indexOutOfBounds (int index){
         if (this.taskManager.indexOutOfBounds(index)) {
-            String outMsg = "____________________________________________________________\n" +
-                    "Index out of bounds! Has to be more than zero and equal or less than task list size!\n" +
-                    "____________________________________________________________\n";
-            System.out.println(outMsg);
+            this.uiError.displayIndexOutOfBounds();
             return true;
         }
         return false;
@@ -103,10 +96,7 @@ public class InputParser {
         // discovery of indexof function came from 2030 and https://www.baeldung.com/java-array-find-index
         // We are assuming command has already been verified.
         if (wordsList.indexOf(firstArgKeyword) == 1) {
-            String outMsg = String.format("____________________________________________________________\n" +
-                    "No task name detected. Provide one between the command %s and %s as an argument. \n" +
-                    "____________________________________________________________\n", command, firstArgKeyword);
-            System.out.println(outMsg);
+            this.uiError.displayTaskNameNotFound(firstArgKeyword,command);
             return true;
         }
         return false;
@@ -115,10 +105,7 @@ public class InputParser {
     private boolean argKeywordNotFound(List<String> wordsList, String argKeyword, String command){
         // We are assuming command has already been verified.
         if (!wordsList.contains(argKeyword)) {
-            String outMsg = String.format("____________________________________________________________\n" +
-                    "No '%s' detected. %s is a required argument for %s. \n" +
-                    "____________________________________________________________\n", argKeyword, argKeyword, command);
-            System.out.println(outMsg);
+            this.uiError.displayArgKeywordNotFound(argKeyword, command);
             return true;
         }
         return false;
@@ -133,12 +120,7 @@ public class InputParser {
                 continue; // likely is just argument to keyword
             }
             if (prevIndex >= index){
-                String outMsg = String.format("____________________________________________________________\n" +
-                        "%s should be before %s \n" +
-                        "Keywords in order: ",argKeywordList.get(index), argKeywordList.get(prevIndex)) ;
-                outMsg = outMsg + String.join(" ", argKeywordList) + "\n" +
-                        "____________________________________________________________\n";
-                System.out.println(outMsg);
+                this.uiError.displayArgKeywordOrderWrong(argKeywordList);
                 return true;
             }
             prevIndex = index;
@@ -152,11 +134,7 @@ public class InputParser {
         if ( (wordsList.indexOf(argKeyword) + 1 == wordsList.size()) ||
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
-            String outMsg = String.format("____________________________________________________________\n" +
-                    "No %s %s detected. Provide one after %s as an argument. \n" +
-                    "____________________________________________________________\n",
-                    command, argType, argKeyword);
-            System.out.println(outMsg);
+            this.uiError.displayNoArgSupplied(argKeyword, argType, command);
             return true;
         }
         return false;
@@ -190,14 +168,11 @@ public class InputParser {
                 // do nothing here, aka try next date format
             }
         }
-        String outMsg = String.format("____________________________________________________________\n" +
-                "Wrong date format! Use yyyy-mm-dd e.g. 2019-05-10 \n" +
-                "____________________________________________________________\n");
-        System.out.println(outMsg);
+        this.uiError.displayValidDateType();
         return "";
     }
 
-    private void setMark(List<String> wordsList, boolean mark, String command, boolean isSilent){
+    private void setMark(List<String> wordsList, boolean mark, String command){
         // We are assuming command has already been verified.
         String outMsg = "";
         int index = -1;
@@ -212,11 +187,11 @@ public class InputParser {
             return;
         }
         else {
-            this.taskManager.setTaskDone(index - 1, mark, isSilent);
+            this.taskManager.setTaskDone(index - 1, mark);
         }
     }
 
-    public void parse(String inputString, boolean isSilent){
+    public void parse(String inputString){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in arrayList as needed by the command.
@@ -234,93 +209,89 @@ public class InputParser {
         String dateType = "";
         int index = -1;
         switch (command){
-            case "list":
-                this.taskManager.listTasks();
+        case "list":
+            this.taskManager.listTasks();
+            break;
+        case "mark":
+            setMark(wordsList, true, command);
+            break;
+        case "unmark":
+            setMark(wordsList, false, command);
+            break;
+        case "todo":
+            if (wrongArgNum(wordsList, 1, command)) {
                 break;
-            case "mark":
-                setMark(wordsList, true, command, isSilent);
+            }
+            taskName = getTaskName(wordsList, "");
+            this.taskManager.addTask(command, taskName, argsList, isMarked, dateType);
+            break;
+        case "deadline":
+            if (argKeywordNotFound(wordsList, "/by", command)) {
                 break;
-            case "unmark":
-                setMark(wordsList, false, command, isSilent);
+            }
+            if (taskNameNotFound(wordsList,"/by", command)) {
                 break;
-            case "todo":
-                if (wrongArgNum(wordsList, 1, command)) {
-                    break;
-                }
-                taskName = getTaskName(wordsList, "");
-                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
+            }
+            if (noArgSupplied(wordsList, List.of("/by"),
+                    "/by", "date", command)) {
                 break;
-            case "deadline":
-                if (argKeywordNotFound(wordsList, "/by", command)) {
-                    break;
-                }
-                if (taskNameNotFound(wordsList,"/by", command)) {
-                    break;
-                }
-                if (noArgSupplied(wordsList, List.of("/by"),
-                        "/by", "date", command)) {
-                    break;
-                }
-                taskName = getTaskName(wordsList, "/by");
-                taskArg = getArg(wordsList, "/by","" );
-                dateType = validDateType(taskArg);
-                if (Objects.equals(dateType, "")){
-                    break;
-                }
-                argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
+            }
+            taskName = getTaskName(wordsList, "/by");
+            taskArg = getArg(wordsList, "/by","" );
+            dateType = validDateType(taskArg);
+            if (Objects.equals(dateType, "")){
                 break;
-            case "event":
-                if (argKeywordNotFound(wordsList, "/from", command) ||
-                        argKeywordNotFound(wordsList, "/to", command)){
-                    break;
-                }
-                if (taskNameNotFound(wordsList, "/from", command)) {
-                    break;
-                }
-                if(argKeywordOrderWrong(wordsList, List.of("/from", "/to"))){
-                    break;
-                }
-                if(noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
-                || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)){
-                   break;
-                }
-                taskName = getTaskName(wordsList, "/from");
-                taskArg = getArg(wordsList, "/from","/to" );
-                dateType = validDateType(taskArg);
-                if (Objects.equals(dateType, "")){
-                    break;
-                }
-                argsList.add(taskArg);
-                taskArg = getArg(wordsList, "/to","");
-                dateType = validDateType(taskArg);
-                if (Objects.equals(dateType, "")){
-                    break;
-                }
-                argsList.add(taskArg);
-                this.taskManager.addTask(command, taskName, argsList, isMarked, isSilent, dateType);
+            }
+            argsList.add(taskArg);
+            this.taskManager.addTask(command, taskName, argsList, isMarked, dateType);
+            break;
+        case "event":
+            if (argKeywordNotFound(wordsList, "/from", command) ||
+                    argKeywordNotFound(wordsList, "/to", command)){
                 break;
-            case "delete":
-                if (wrongArgNum(wordsList, 1, command)) {
-                    break;
-                }
-                if (argNotInteger(command,wordsList)){
-                    break;
-                }
-                index = Integer.parseInt(wordsList.get(1));
-                if(indexOutOfBounds(index)){
-                    break;
-                }
-                else {
-                    this.taskManager.deleteTask(index - 1, isSilent);
-                }
+            }
+            if (taskNameNotFound(wordsList, "/from", command)) {
                 break;
-            default:
-                outMsg = "____________________________________________________________\n" +
-                        "Woops, thats not a valid command. Try again! \n" +
-                        "____________________________________________________________\n";
-                System.out.println(outMsg);
-
+            }
+            if(argKeywordOrderWrong(wordsList, List.of("/from", "/to"))){
+                break;
+            }
+            if(noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
+            || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)){
+               break;
+            }
+            taskName = getTaskName(wordsList, "/from");
+            taskArg = getArg(wordsList, "/from","/to" );
+            dateType = validDateType(taskArg);
+            if (Objects.equals(dateType, "")){
+                break;
+            }
+            argsList.add(taskArg);
+            taskArg = getArg(wordsList, "/to","");
+            dateType = validDateType(taskArg);
+            if (Objects.equals(dateType, "")){
+                break;
+            }
+            argsList.add(taskArg);
+            this.taskManager.addTask(command, taskName, argsList, isMarked, dateType);
+            break;
+        case "delete":
+            if (wrongArgNum(wordsList, 1, command)) {
+                break;
+            }
+            if (argNotInteger(command,wordsList)){
+                break;
+            }
+            index = Integer.parseInt(wordsList.get(1));
+            if(indexOutOfBounds(index)){
+                break;
+            }
+            else {
+                this.taskManager.deleteTask(index - 1);
+            }
+            break;
+        default:
+            this.uiError.displayInvalidCommand();
         }
     }
 }
