@@ -2,7 +2,7 @@ package basilseed.ui;
 
 import java.util.Scanner;
 
-public class UiInputOutput extends Ui {
+public class UiInputOutput extends Ui implements AutoCloseable {
     private Scanner scanner;
 
     public UiInputOutput() {
@@ -19,11 +19,11 @@ public class UiInputOutput extends Ui {
         return this.scanner.nextLine();
     }
 
-    // discovery of finalize came from googling "java method that automatically runs when object is destroyed
-    //     or finish running. Many articles on "finalize()"
-    // https://www.geeksforgeeks.org/java/finalize-method-in-java-and-how-to-override-it/
+
+
+    // discovery of autocloseable came from https://www.baeldung.com/java-destructor
     @Override
-    protected void finalize() throws Throwable {
+    public void close() throws Exception {
         this.scanner.close();
     }
 
