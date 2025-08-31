@@ -1,9 +1,6 @@
-package basilseed;
+package basilseed.task;
 
-import basilseed.task.Deadline;
-import basilseed.task.Event;
-import basilseed.task.Task;
-import basilseed.task.ToDo;
+import basilseed.Storage;
 import basilseed.ui.UiSuccess;
 
 import java.util.ArrayList;

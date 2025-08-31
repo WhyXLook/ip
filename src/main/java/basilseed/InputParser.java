@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 import basilseed.task.Task;
+import basilseed.task.TaskManager;
 import basilseed.ui.UiError;
 
 

@@ -2,6 +2,7 @@ package basilseed;
 
 import java.util.ArrayList;
 
+import basilseed.task.TaskManager;
 import basilseed.ui.UiError;
 import basilseed.ui.UiStandard;
 import basilseed.ui.UiInputOutput;
