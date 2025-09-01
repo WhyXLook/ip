@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public class Storage {
-    private static final String DEFAULT_FILE_PATH = "./ip/src/main/java/basilseed/data/tasks.txt";
+    public static final String DEFAULT_FILE_PATH = "./src/main/java/basilseed/data/tasks.txt";
 
     private Path path;
     private UiError uiError;
