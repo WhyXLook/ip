@@ -2,7 +2,7 @@ package basilseed.ui;
 
 import java.util.Scanner;
 
-public class UiInputOutput extends Ui implements AutoCloseable {
+public class UiInputOutput extends Ui {
     private Scanner scanner;
 
     public UiInputOutput() {
@@ -22,8 +22,7 @@ public class UiInputOutput extends Ui implements AutoCloseable {
 
 
     // discovery of autocloseable came from https://www.baeldung.com/java-destructor
-    @Override
-    public void close() throws Exception {
+    public void close() {
         this.scanner.close();
     }
 
