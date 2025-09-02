@@ -17,6 +17,10 @@ public abstract class Ui {
         this.isSilent = silent;
     }
 
+    public boolean getIsSilentStatus(){
+        return this.isSilent;
+    }
+
     protected void displayLine() {
         System.out.println("____________________________________________________________\n");
     }
