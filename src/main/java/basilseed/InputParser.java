@@ -142,13 +142,6 @@ public class InputParser {
         }
     }
 
-    public boolean isMarked(String inputString){
-        if (inputString.matches("\\[.\\]\\[X\\]")){
-            return true;
-        }
-        return false;
-    }
-
     private String validDateType(String dateString){
         List<String> dateTypes = new ArrayList<>();
         //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
@@ -167,6 +160,13 @@ public class InputParser {
         }
         this.uiError.displayValidDateType();
         return "";
+    }
+
+    public boolean isMarked(String inputString){
+        if (inputString.matches("\\[.\\]\\[X\\]")){
+            return true;
+        }
+        return false;
     }
 
     public String getDateType(List<String> argList){
