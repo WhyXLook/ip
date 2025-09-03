@@ -62,15 +62,15 @@ public class TaskManager {
         this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
     }
 
-    private void findTask (String keyword) {
+    private List<String> findTask (String keyword) {
         ArrayList<String> taskStringList = new ArrayList<>(getAllTasks());
         ArrayList<String> foundTaskList = new ArrayList<>();
         for (String taskString : taskStringList) {
-            if (!taskString.matches(".*" + Pattern.quote(keyword) + ".*")) {
+            if (taskString.matches(".*" + Pattern.quote(keyword) + ".*")) {
                 foundTaskList.add(taskString);
             }
         }
-        listTasks(foundTaskList);
+        return foundTaskList;
     }
 
     public void processCommand (String command, String taskName, List<String> args, boolean isDone,
@@ -102,7 +102,7 @@ public class TaskManager {
             deleteTask(Integer.parseInt(args.get(0)) - 1);
             break;
         case "find":
-            findTask(taskName);
+            listTasks(findTask(taskName));
             break;
         default:
             break;
