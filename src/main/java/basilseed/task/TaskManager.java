@@ -6,6 +6,8 @@ import basilseed.ui.UiSuccess;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.regex.Pattern;
+
 /**
  * Manages tasks and provides operations such as add, delete, mark, unmark, and list.
  * Synchronizes tasks with persistent storage and communicates results through UiSuccess.
@@ -33,10 +35,14 @@ public class TaskManager {
         storage.write(outputString);
     }
 
-    private void listTasks() {
+    private List<String> getAllTasks() {
         List<String> taskStringList = tasks.stream()
-            .map(task -> task.toString())
-            .toList();
+                .map(task -> task.toString())
+                .toList();
+        return taskStringList;
+    }
+
+    private void listTasks(List<String> taskStringList){
         uiSuccess.displayTaskList(taskStringList);
     }
 
@@ -70,6 +76,17 @@ public class TaskManager {
         this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
     }
 
+    private List<String> findTask (String keyword) {
+        ArrayList<String> taskStringList = new ArrayList<>(getAllTasks());
+        ArrayList<String> foundTaskList = new ArrayList<>();
+        for (String taskString : taskStringList) {
+            if (taskString.matches(".*" + Pattern.quote(keyword) + ".*")) {
+                foundTaskList.add(taskString);
+            }
+        }
+        return foundTaskList;
+    }
+
     /**
      * Processes a command string and executes the corresponding task operation.
      *
@@ -84,7 +101,7 @@ public class TaskManager {
         Task task;
         switch(command) {
         case "list":
-            listTasks();
+            listTasks(getAllTasks());
             break;
         case "mark":
             setTaskDone(Integer.parseInt(args.get(0)) - 1, true);
@@ -106,6 +123,9 @@ public class TaskManager {
             break;
         case "delete":
             deleteTask(Integer.parseInt(args.get(0)) - 1);
+            break;
+        case "find":
+            listTasks(findTask(taskName));
             break;
         default:
             break;

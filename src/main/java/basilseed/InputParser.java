@@ -31,7 +31,8 @@ public class InputParser {
         "todo", List.of(""),
         "deadline", List.of("/by"),
         "event", List.of("/from", "/to"),
-        "delete", List.of("")
+        "delete", List.of(""),
+        "find", List.of("")
         );
 
     private UiError uiError;
@@ -364,6 +365,11 @@ public class InputParser {
             else {
                 return inputString;
             }
+        case "find":
+            if (wrongArgNum(wordsList, 1, command)) {
+                return "";
+            }
+            return inputString;
         default:
             this.uiError.displayInvalidCommand();
             return "";
