@@ -9,8 +9,21 @@ import basilseed.ui.UiStandard;
 import basilseed.ui.UiInputOutput;
 import basilseed.ui.UiSuccess;
 
+/**
+ * Entry point of the BasilSeed application.
+ * Handles program startup, initialization of UI components,
+ * command parsing, and main execution loop.
+ */
 public class BasilSeed {
 
+    /**
+     * Parses a user input string, validates it, and executes the corresponding command.
+     *
+     * @param inputString User input string.
+     * @param inputParser Parser for validating and extracting command details.
+     * @param taskManager Task manager for executing commands.
+     * @param uiSuccess UI handler for success messages.
+     */
     private static void parseAndProcess(String inputString, InputParser inputParser, TaskManager taskManager,
                                         UiSuccess uiSuccess) {
         String validString = inputParser.parse(inputString, taskManager.getTaskCount());
@@ -24,6 +37,13 @@ public class BasilSeed {
         }
     }
 
+    /**
+     * Initializes the task list from storage and loads tasks into the task manager.
+     *
+     * @param inputParser Parser for interpreting stored task strings.
+     * @param taskManager Task manager to populate.
+     * @param uiSuccess UI handler for success messages.
+     */
     private static void startUp(InputParser inputParser, TaskManager taskManager, UiSuccess uiSuccess) {
         /*
         Self-explanatory function. Reads storage on startup and initializes
@@ -39,6 +59,11 @@ public class BasilSeed {
 
     }
 
+    /**
+     * Main entry point of the BasilSeed program.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         UiStandard uiStandard = new UiStandard();
         uiStandard.displayGreeting();

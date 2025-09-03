@@ -15,9 +15,16 @@ import basilseed.task.Task;
 import basilseed.ui.UiError;
 
 
+/**
+ * Parses and validates user input into commands, arguments, and task attributes.
+ * Ensures correctness of argument count, types, keywords, and date formats.
+ * Extracts command details (task names, arguments)
+ * Reports errors through UiError.
+ */
 public class InputParser {
     private static final String STORAGE_DATE_FORMAT = Task.STORAGE_DATE_FORMAT;
     private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
+    /** Mapping from commands to their expected argument keywords */
     public static final Map<String, List<String>> COMMAND_KEYWORDS_MAP = Map.of("list", List.of(""),
         "mark", List.of(""),
         "unmark", List.of(""),
@@ -29,6 +36,11 @@ public class InputParser {
 
     private UiError uiError;
 
+    /**
+     * Creates an InputParser with the specified UiError handler.
+     *
+     * @param uiError UI handler for displaying errors.
+     */
     public InputParser(UiError uiError) {
         this.uiError = uiError;
     }
@@ -162,6 +174,12 @@ public class InputParser {
         return "";
     }
 
+    /**
+     * Returns whether the input string represents a marked task.
+     *
+     * @param inputString String representation of the task.
+     * @return True if task is marked, false otherwise.
+     */
     public boolean isMarked(String inputString){
         if (inputString.matches("\\[.\\]\\[X\\]")){
             return true;
@@ -169,6 +187,12 @@ public class InputParser {
         return false;
     }
 
+    /**
+     * Returns the date format type of the first valid date found in the argument list.
+     *
+     * @param argList List of arguments.
+     * @return Date format string if valid date found, empty string otherwise.
+     */
     public String getDateType(List<String> argList){
         this.uiError.setSilent(true);
         for (String arg : argList) {
@@ -182,6 +206,12 @@ public class InputParser {
         return "";
     }
 
+    /**
+     * Returns the command keyword from an input string.
+     *
+     * @param inputString User input.
+     * @return Command string, or empty string if invalid.
+     */
     public String getCommand (String inputString ){
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         String firstWord = wordsList.get(0);
@@ -200,9 +230,12 @@ public class InputParser {
         return "";
     }
 
-    // TODO get all firstArgKeyword by doing the setKey thing
-    //  then finish up on the rest (i.e. implement getCommand, getTaskName, getAllArgs (new method)
-    //  If everything works do the Command thing
+    /**
+     * Returns the task name parsed from the input string.
+     *
+     * @param inputString User input.
+     * @return Task name.
+     */
     public String getTaskName (String inputString){
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         String command = getCommand(inputString);
@@ -222,6 +255,12 @@ public class InputParser {
         return taskName;
     }
 
+    /**
+     * Returns all argument values parsed from the input string.
+     *
+     * @param inputString User input.
+     * @return List of argument values. Excludes the argument keywords and task name.
+     */
     public List<String> getAllArgs (String inputString) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         String command = getCommand(inputString);
@@ -235,6 +274,14 @@ public class InputParser {
         return allArgs;
     }
 
+    /**
+     * Parses and validates the given input string against the current task list size.
+     * Will only run checks.
+     *
+     * @param inputString User input.
+     * @param taskListSize Size of the task list.
+     * @return Input string if valid, empty string otherwise.
+     */
     public String parse(String inputString, int taskListSize){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List

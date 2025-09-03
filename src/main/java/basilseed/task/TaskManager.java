@@ -6,10 +6,19 @@ import basilseed.ui.UiSuccess;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages tasks and provides operations such as add, delete, mark, unmark, and list.
+ * Synchronizes tasks with persistent storage and communicates results through UiSuccess.
+ */
 public class TaskManager {
     private ArrayList<Task> tasks = new ArrayList<>();
     private UiSuccess uiSuccess;
 
+    /**
+     * Creates a TaskManager with the specified UiSuccess handler.
+     *
+     * @param uiSuccess UI handler for displaying task operations.
+     */
     public TaskManager(UiSuccess uiSuccess) {
         this.uiSuccess = uiSuccess;
     }
@@ -31,6 +40,11 @@ public class TaskManager {
         uiSuccess.displayTaskList(taskStringList);
     }
 
+    /**
+     * Returns the number of tasks in the task list.
+     *
+     * @return Number of tasks.
+     */
     public int getTaskCount(){
         return tasks.size();
     }
@@ -56,6 +70,15 @@ public class TaskManager {
         this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
     }
 
+    /**
+     * Processes a command string and executes the corresponding task operation.
+     *
+     * @param command Command to execute (list, mark, unmark, todo, deadline, event, delete).
+     * @param taskName Name of the task (for todo, deadline, event).
+     * @param args Arguments for the command (such as dates or indices).
+     * @param isDone Initial completion state for the new task.
+     * @param dateType Format of the date string (for deadline and event).
+     */
     public void processCommand (String command, String taskName, List<String> args, boolean isDone,
                          String dateType){
         Task task;

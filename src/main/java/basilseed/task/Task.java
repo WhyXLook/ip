@@ -3,6 +3,9 @@ package basilseed.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Abstract base class for all tasks.
+ */
 public abstract class Task {
     public static final String STORAGE_DATE_FORMAT = "MMM dd yyyy";
     public static final String INPUT_DATE_FORMAT = "yyyy-MM-dd";
@@ -15,10 +18,20 @@ public abstract class Task {
         this.isDone = false;
     }
 
+    /**
+     * Returns the status icon of the task.
+     *
+     * @return "X" if done, empty string otherwise.
+     */
     public String getStatusIcon() {
         return (isDone ? "X" : ""); // mark done task with X
     }
 
+    /**
+     * Sets the completion status of the task.
+     *
+     * @param inputBoolean True if done, false otherwise.
+     */
     public void setDone(boolean inputBoolean) {
         this.isDone = inputBoolean;
     }
