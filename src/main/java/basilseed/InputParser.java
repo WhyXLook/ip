@@ -24,7 +24,8 @@ public class InputParser {
         "todo", List.of(""),
         "deadline", List.of("/by"),
         "event", List.of("/from", "/to"),
-        "delete", List.of("")
+        "delete", List.of(""),
+        "find", List.of("")
         );
 
     private UiError uiError;
