@@ -319,6 +319,11 @@ public class InputParser {
             else {
                 return inputString;
             }
+        case "find":
+            if (wrongArgNum(wordsList, 1, command)) {
+                return "";
+            }
+            return inputString;
         default:
             this.uiError.displayInvalidCommand();
             return "";
