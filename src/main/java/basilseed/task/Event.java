@@ -3,6 +3,10 @@ package basilseed.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task with a start and end date, such as an event or activity.
+ * Stores the event name, start date, and end date.
+ */
 public class Event extends Task {
     protected LocalDate from;
     protected LocalDate to;

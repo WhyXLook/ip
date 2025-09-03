@@ -1,7 +1,9 @@
 package basilseed.ui;
 
-import java.util.List;
-
+/**
+ * Abstract base class for UI components.
+ * Provides common functions such as setting silence and message formatting.
+ */
 public abstract class Ui {
     private boolean isSilent;
 

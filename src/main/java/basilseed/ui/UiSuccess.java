@@ -2,6 +2,9 @@ package basilseed.ui;
 
 import java.util.List;
 
+/**
+ * Handles and displays success messages when user commands execute correctly.
+ */
 public class UiSuccess extends Ui {
     public UiSuccess() {
         super();
@@ -11,6 +14,11 @@ public class UiSuccess extends Ui {
         super(silent);
     }
 
+    /**
+     * Displays the current list of tasks with their indices.
+     *
+     * @param taskList the list of task string representations
+     */
     public void displayTaskList(List<String> taskList) {
         String outMsg =  "";
         for (int i = 0; i < taskList.size(); i++) {
@@ -19,6 +27,12 @@ public class UiSuccess extends Ui {
         super.displayMessage(outMsg);
     }
 
+    /**
+     * Displays a message confirming whether a task was marked done or not done.
+     *
+     * @param taskString the task description
+     * @param isDone     true if the task is now marked done, false if unmarked
+     */
     public void displayTaskMarked(String taskString, boolean isDone){
         String outMsg = "";
         if(isDone){
@@ -29,6 +43,12 @@ public class UiSuccess extends Ui {
         displayMessage(outMsg);
     }
 
+    /**
+     * Displays a message confirming that a task was added to the list.
+     *
+     * @param taskString the task description
+     * @param totalTasks the total number of tasks after addition
+     */
     public void displayTaskAdded(String taskString, int totalTasks) {
         String outMsg = "Got it. I've added this task:\n" +
                 taskString + "\n" +
@@ -36,6 +56,12 @@ public class UiSuccess extends Ui {
         super.displayMessage(outMsg);
     }
 
+    /**
+     * Displays a message confirming that a task was removed from the list.
+     *
+     * @param taskString the task description
+     * @param totalTasks the total number of tasks after deletion
+     */
     public void displayTaskDeleted(String taskString, int totalTasks) {
         String outMsg = "Noted. I've removed this task:\n" +
                 taskString + "\n" +

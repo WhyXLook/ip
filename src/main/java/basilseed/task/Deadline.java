@@ -7,6 +7,13 @@ public class Deadline extends Task {
 
     protected LocalDate by;
 
+    /**
+     * Represents a deadline task with a name, due date, and date format type.
+     *
+     * @param name Name of the task.
+     * @param by Due date string.
+     * @param dateType Format of the date string.
+     */
     public Deadline(String name, String by, String dateType) {
         super(name);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);
