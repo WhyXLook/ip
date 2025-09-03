@@ -17,7 +17,7 @@ public abstract class Ui {
         this.isSilent = silent;
     }
 
-    public boolean getIsSilentStatus(){
+    public boolean getIsSilentStatus() {
         return this.isSilent;
     }
 

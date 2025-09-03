@@ -14,7 +14,7 @@ public class BasilSeed {
     private static void parseAndProcess(String inputString, InputParser inputParser, TaskManager taskManager,
                                         UiSuccess uiSuccess) {
         String validString = inputParser.parse(inputString, taskManager.getTaskCount());
-        if (!validString.isEmpty()){
+        if (!validString.isEmpty()) {
             String command = inputParser.getCommand(validString);
             String taskName = inputParser.getTaskName(validString);
             List<String> argsList = inputParser.getAllArgs(validString);
@@ -32,7 +32,7 @@ public class BasilSeed {
         Storage storage = new Storage();
         ArrayList<String> taskStrings = storage.read();
         uiSuccess.setSilent(true);
-        for (String taskString : taskStrings){
+        for (String taskString : taskStrings) {
             parseAndProcess(taskString, inputParser, taskManager, uiSuccess);
         }
         uiSuccess.setSilent(false);
@@ -46,10 +46,9 @@ public class BasilSeed {
         UiSuccess uiSuccess = new UiSuccess();
         UiInputOutput uiIo = new UiInputOutput();
         TaskManager taskManager = new TaskManager(uiSuccess);
-        InputParser inputParser = new InputParser( uiError);
+        InputParser inputParser = new InputParser(uiError);
         startUp(inputParser, taskManager, uiSuccess);
-        String userInput = uiIo.getInput();
-        for(;!userInput.equals("bye"); userInput = uiIo.getInput()){
+        for (String userInput = uiIo.getInput(); !userInput.equals("bye"); userInput = uiIo.getInput()) {
             parseAndProcess(userInput, inputParser, taskManager, uiSuccess);
         }
         uiStandard.displayFarewell();

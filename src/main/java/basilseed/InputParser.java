@@ -33,27 +33,26 @@ public class InputParser {
         this.uiError = uiError;
     }
 
-    private boolean wrongArgNum (List<String> wordsList, int argNum, String command){
+    private boolean wrongArgNum(List<String> wordsList, int argNum, String command) {
         // We are assuming command has already been verified.
-        if (wordsList.size() <= argNum ) {
+        if (wordsList.size() <= argNum) {
             this.uiError.displayWrongArgNum(command, argNum);
             return true;
         }
         return false;
     }
 
-    private boolean argNotInteger (String command, List<String> wordsList){
+    private boolean argNotInteger(String command, List<String> wordsList) {
         try {
             int index = Integer.parseInt(wordsList.get(1));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             this.uiError.displayArgNotInteger(command);
             return true;
         }
         return false;
     }
 
-    private boolean indexOutOfBounds (int index, int bounds){
+    private boolean indexOutOfBounds(int index, int bounds) {
         if (index <= 0 || index > bounds) {
             this.uiError.displayIndexOutOfBounds();
             return true;
@@ -61,7 +60,7 @@ public class InputParser {
         return false;
     }
 
-    private boolean taskNameNotFound(List<String> wordsList, String firstArgKeyword, String command){
+    private boolean taskNameNotFound(List<String> wordsList, String firstArgKeyword, String command) {
         // We are assuming command has already been verified.
         if (wordsList.indexOf(firstArgKeyword) == 1) {
             this.uiError.displayTaskNameNotFound(firstArgKeyword,command);
@@ -70,7 +69,7 @@ public class InputParser {
         return false;
     }
 
-    private boolean argKeywordNotFound(List<String> wordsList, String argKeyword, String command){
+    private boolean argKeywordNotFound(List<String> wordsList, String argKeyword, String command) {
         // We are assuming command has already been verified.
         if (!wordsList.contains(argKeyword)) {
             this.uiError.displayArgKeywordNotFound(argKeyword, command);
@@ -79,15 +78,15 @@ public class InputParser {
         return false;
     }
 
-    private boolean argKeywordOrderWrong (List<String> wordsList, List<String> argKeywordList){
+    private boolean argKeywordOrderWrong(List<String> wordsList, List<String> argKeywordList) {
         int index = 0;
         int prevIndex = -1;
-        for (String keyword : wordsList){
+        for (String keyword : wordsList) {
             index = argKeywordList.indexOf(keyword);
-            if (index == -1){
+            if (index == -1) {
                 continue; // likely is just argument to keyword
             }
-            if (prevIndex >= index){
+            if (prevIndex >= index) {
                 this.uiError.displayArgKeywordOrderWrong(argKeywordList);
                 return true;
             }
@@ -97,9 +96,9 @@ public class InputParser {
     }
 
     private boolean noArgSupplied(List<String> wordsList, List<String> argKeywordList,
-                                  String argKeyword, String argType, String command){
+                                  String argKeyword, String argType, String command) {
         // We are assuming command has already been verified.
-        if ( (wordsList.indexOf(argKeyword) + 1 == wordsList.size()) ||
+        if ((wordsList.indexOf(argKeyword) + 1 == wordsList.size()) ||
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
             this.uiError.displayNoArgSupplied(argKeyword, argType, command);
@@ -108,9 +107,9 @@ public class InputParser {
         return false;
     }
 
-    private String getArg(List<String> wordsList, String argKeyword, String enderArgKeyword){
+    private String getArg(List<String> wordsList, String argKeyword, String enderArgKeyword) {
         int endIndex = wordsList.size();
-        if (!enderArgKeyword.isEmpty()){
+        if (!enderArgKeyword.isEmpty()) {
             endIndex = wordsList.indexOf(enderArgKeyword);
         }
         int startIndex = argKeyword.isEmpty() ? 1 : wordsList.indexOf(argKeyword) + 1;
@@ -121,28 +120,27 @@ public class InputParser {
         return taskArg;
     }
 
-    private String parseMark(String inputString, String command, int bounds){
+    private String parseMark(String inputString, String command, int bounds) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         // We are assuming command has already been verified.
         String outMsg = "";
         int index = -1;
-        if (wrongArgNum(wordsList, 1, command)){
+        if (wrongArgNum(wordsList, 1, command)) {
             return "";
         }
-        if (argNotInteger(command,wordsList)){
+        if (argNotInteger(command,wordsList)) {
             return "";
         }
         index = Integer.parseInt(wordsList.get(1));
-        if (indexOutOfBounds(index, bounds)){
+        if (indexOutOfBounds(index, bounds)) {
             return "";
-        }
-        else {
+        } else {
             //this.taskManager.setTaskDone(index - 1, mark);
             return inputString;
         }
     }
 
-    private String validDateType(String dateString){
+    private String validDateType(String dateString) {
         List<String> dateTypes = new ArrayList<>();
         //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
         //formatters.add(DateTimeFormatter.ofPattern(INPUT_DATE_FORMAT));
@@ -162,18 +160,18 @@ public class InputParser {
         return "";
     }
 
-    public boolean isMarked(String inputString){
-        if (inputString.matches("\\[.\\]\\[X\\]")){
+    public boolean isMarked(String inputString) {
+        if (inputString.matches("\\[.\\]\\[X\\]")) {
             return true;
         }
         return false;
     }
 
-    public String getDateType(List<String> argList){
+    public String getDateType(List<String> argList) {
         this.uiError.setSilent(true);
         for (String arg : argList) {
             String dateType = validDateType(arg);
-            if (!dateType.isEmpty()){
+            if (!dateType.isEmpty()) {
                 this.uiError.setSilent(false);
                 return dateType;
             }
@@ -182,11 +180,11 @@ public class InputParser {
         return "";
     }
 
-    public String getCommand (String inputString ){
+    public String getCommand (String inputString ) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         String firstWord = wordsList.get(0);
         List<String> commandList = new ArrayList<>(COMMAND_KEYWORDS_MAP.keySet());
-        if (commandList.contains(firstWord)){
+        if (commandList.contains(firstWord)) {
             return firstWord;
         }
 
@@ -235,7 +233,7 @@ public class InputParser {
         return allArgs;
     }
 
-    public String parse(String inputString, int taskListSize){
+    public String parse(String inputString, int taskListSize) {
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in arrayList as needed by the command.
@@ -250,7 +248,7 @@ public class InputParser {
         String taskArg = "";
         String dateType = "";
         int index = -1;
-        switch (command){
+        switch (command) {
         case "list":
             return inputString;
         case "mark":
@@ -275,33 +273,33 @@ public class InputParser {
             }
             taskArg = getArg(wordsList, "/by","" );
             dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")){
+            if (Objects.equals(dateType, "")) {
                 return "";
             }
             return inputString;
         case "event":
             if (argKeywordNotFound(wordsList, "/from", command) ||
-                    argKeywordNotFound(wordsList, "/to", command)){
+                    argKeywordNotFound(wordsList, "/to", command)) {
                 return "";
             }
             if (taskNameNotFound(wordsList, "/from", command)) {
                 return "";
             }
-            if(argKeywordOrderWrong(wordsList, List.of("/from", "/to"))){
+            if (argKeywordOrderWrong(wordsList, List.of("/from", "/to"))) {
                 return "";
             }
-            if(noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
-            || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)){
+            if (noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
+            || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)) {
                 return "";
             }
             taskArg = getArg(wordsList, "/from","/to" );
             dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")){
+            if (Objects.equals(dateType, "")) {
                 return "";
             }
             taskArg = getArg(wordsList, "/to","");
             dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")){
+            if (Objects.equals(dateType, "")) {
                 return "";
             }
             return inputString;
@@ -309,11 +307,11 @@ public class InputParser {
             if (wrongArgNum(wordsList, 1, command)) {
                 return "";
             }
-            if (argNotInteger(command,wordsList)){
+            if (argNotInteger(command,wordsList)) {
                 return "";
             }
             index = Integer.parseInt(wordsList.get(1));
-            if(indexOutOfBounds(index, taskListSize)){
+            if (indexOutOfBounds(index, taskListSize)) {
                 return "";
             }
             else {

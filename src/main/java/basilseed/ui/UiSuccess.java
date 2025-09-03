@@ -19,9 +19,9 @@ public class UiSuccess extends Ui {
         super.displayMessage(outMsg);
     }
 
-    public void displayTaskMarked(String taskString, boolean isDone){
+    public void displayTaskMarked(String taskString, boolean isDone) {
         String outMsg = "";
-        if(isDone){
+        if (isDone) {
             outMsg =  "Nice! I've marked this task as done: " + taskString + "\n";
         } else {
             outMsg = "OK, I've marked this task as not done yet: " + taskString + "\n";
@@ -31,15 +31,15 @@ public class UiSuccess extends Ui {
 
     public void displayTaskAdded(String taskString, int totalTasks) {
         String outMsg = "Got it. I've added this task:\n" +
-                taskString + "\n" +
-                "Now you have " + totalTasks + " tasks in the list.\n";
+            taskString + "\n" +
+            "Now you have " + totalTasks + " tasks in the list.\n";
         super.displayMessage(outMsg);
     }
 
     public void displayTaskDeleted(String taskString, int totalTasks) {
         String outMsg = "Noted. I've removed this task:\n" +
-                taskString + "\n" +
-                "Now you have " + totalTasks + " tasks in the list.\n";
+            taskString + "\n" +
+            "Now you have " + totalTasks + " tasks in the list.\n";
         super.displayMessage(outMsg);
     }
 }

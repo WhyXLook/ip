@@ -15,13 +15,10 @@ public class UiInputOutput extends Ui {
         this.scanner = new Scanner(System.in);
     }
 
-    public String getInput(){
+    public String getInput() {
         return this.scanner.nextLine();
     }
 
-
-
-    // discovery of autocloseable came from https://www.baeldung.com/java-destructor
     public void close() {
         this.scanner.close();
     }

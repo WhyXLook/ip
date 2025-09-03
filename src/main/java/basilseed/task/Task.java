@@ -23,7 +23,7 @@ public abstract class Task {
         this.isDone = inputBoolean;
     }
 
-    protected static String formatDate (LocalDate date){
+    protected static String formatDate (LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT);
         String dateString = date.format(formatter);
         return dateString;

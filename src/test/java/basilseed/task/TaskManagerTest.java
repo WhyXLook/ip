@@ -47,10 +47,10 @@ public class TaskManagerTest {
             "yyyy-MM-dd");
         assertEquals(2, taskManager.getTaskCount());
         taskManager.processCommand("event", "meeting", List.of("2025-01-02","2025-01-03"), false,
-                "yyyy-MM-dd");
+            "yyyy-MM-dd");
         assertEquals(3, taskManager.getTaskCount());
         taskManager.processCommand("delete", "", List.of("1"), false,
-                "");
+            "");
         assertEquals(2, taskManager.getTaskCount());
     }
 

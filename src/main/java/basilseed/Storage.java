@@ -49,7 +49,7 @@ public class Storage {
         }
     }
 
-    public ArrayList<String> read(){
+    public ArrayList<String> read() {
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(this.path);
