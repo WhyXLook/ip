@@ -70,7 +70,7 @@ public class Storage {
      *
      * @return List of strings read from storage.
      */
-    public ArrayList<String> read(){
+    public ArrayList<String> read() {
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(this.path);

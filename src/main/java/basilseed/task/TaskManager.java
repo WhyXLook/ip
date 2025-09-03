@@ -23,9 +23,9 @@ public class TaskManager {
         this.uiSuccess = uiSuccess;
     }
 
-    private void updateStorage(){
+    private void updateStorage() {
         ArrayList<String> outputString = new ArrayList<>();
-        for (Task task : tasks){
+        for (Task task : tasks) {
             String taskString = task.toString();
             outputString.add(taskString);
         }
@@ -33,7 +33,7 @@ public class TaskManager {
         storage.write(outputString);
     }
 
-    private void listTasks(){
+    private void listTasks() {
         List<String> taskStringList = tasks.stream()
             .map(task -> task.toString())
             .toList();
@@ -49,21 +49,21 @@ public class TaskManager {
         return tasks.size();
     }
 
-    private void setTaskDone (int index, boolean done){
+    private void setTaskDone(int index, boolean done) {
         this.tasks.get(index).setDone(done);
         updateStorage();
         String outMsg;
         this.uiSuccess.displayTaskMarked(this.tasks.get(index).toString(), done);
     }
 
-    private void addTask (Task task, boolean isDone){
+    private void addTask(Task task, boolean isDone) {
         task.setDone(isDone);
         this.tasks.add(task);
         updateStorage();
         this.uiSuccess.displayTaskAdded(task.toString(), this.tasks.size());
     }
 
-    private void deleteTask (int index){
+    private void deleteTask (int index) {
         Task task = tasks.get(index);
         this.tasks.remove(index);
         updateStorage();
@@ -80,9 +80,9 @@ public class TaskManager {
      * @param dateType Format of the date string (for deadline and event).
      */
     public void processCommand (String command, String taskName, List<String> args, boolean isDone,
-                         String dateType){
+                         String dateType) {
         Task task;
-        switch(command){
+        switch(command) {
         case "list":
             listTasks();
             break;
@@ -111,6 +111,4 @@ public class TaskManager {
             break;
         }
     }
-
-
 }
