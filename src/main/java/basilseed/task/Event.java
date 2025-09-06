@@ -11,6 +11,16 @@ public class Event extends Task {
     protected LocalDate from;
     protected LocalDate to;
 
+    /**
+     * Constructs an Event with the specified name, start date, and end date.
+     * The provided date strings are parsed into LocalDate instances
+     * using the specified date format pattern.
+     *
+     * @param name the name of the event
+     * @param from the start date of the event as a string
+     * @param to the end date of the event as a string
+     * @param dateType the date format pattern (e.g. yyyy-MM-dd) used to parse the dates
+     */
     public Event(String name, String from, String to, String dateType) {
         super(name);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);

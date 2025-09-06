@@ -3,16 +3,21 @@ package basilseed.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task that has a deadline.
+ */
 public class Deadline extends Task {
 
     protected LocalDate by;
 
     /**
-     * Represents a deadline task with a name, due date, and date format type.
+     * Constructs a deadline task with a name, due date, and date format type.
+     * The provided date string is parsed into a LocalDate instance
+     * using the specified date format pattern.
      *
-     * @param name Name of the task.
+     * @param name Name of the deadline.
      * @param by Due date string.
-     * @param dateType Format of the date string.
+     * @param dateType the date format pattern (e.g. yyyy-MM-dd) used to parse the dates
      */
     public Deadline(String name, String by, String dateType) {
         super(name);

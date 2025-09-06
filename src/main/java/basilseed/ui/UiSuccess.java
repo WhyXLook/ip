@@ -6,10 +6,22 @@ import java.util.List;
  * Handles and displays success messages when user commands execute correctly.
  */
 public class UiSuccess extends Ui {
+
+    /**
+     * Constructs a UiSuccess instance with silent mode disabled.
+     * The UI will display all messages by default.
+     */
     public UiSuccess() {
         super();
     }
 
+    /**
+     * Constructs a Ui instance with the specified silent mode.
+     * If silent mode is enabled, the UI suppresses all output messages.
+     *
+     * @param silent true to suppress output messages,
+     *               false to allow messages to be displayed.
+     */
     public UiSuccess(boolean silent) {
         super(silent);
     }
