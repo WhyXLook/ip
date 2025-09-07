@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
+import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.Task;
 import basilseed.ui.UiError;
 
@@ -43,52 +43,55 @@ public class InputParser {
         this.uiError = uiError;
     }
 
-    private boolean wrongArgNum(List<String> wordsList, int argNum, String command) {
+    private void wrongArgNumCheck(List<String> wordsList, int argNum, String command) throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
         if (wordsList.size() <= argNum) {
-            this.uiError.displayWrongArgNum(command, argNum);
-            return true;
+            String outMsg = String.format("Wrong number of arguments. %s should have %d argument. \n",
+                command, argNum);
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
-    private boolean argNotInteger(String command, List<String> wordsList) {
+    private void argNotIntegerCheck(String command, List<String> wordsList) throws BasilSeedInvalidInputException {
         try {
             int index = Integer.parseInt(wordsList.get(1));
         } catch (NumberFormatException e) {
-            this.uiError.displayArgNotInteger(command);
-            return true;
+            String outMsg = String.format(
+                "Argument is not a number! \nExample usage: %s 2 \n", command);
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
-    private boolean indexOutOfBounds(int index, int bounds) {
+    private void indexOutOfBoundsCheck(int index, int bounds) throws BasilSeedInvalidInputException {
         if (index <= 0 || index > bounds) {
-            this.uiError.displayIndexOutOfBounds();
-            return true;
+            String outMsg = "Index out of bounds! Has to be more than zero and equal or less than task list size!\n";
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
-    private boolean taskNameNotFound(List<String> wordsList, String firstArgKeyword, String command) {
+    private void taskNameNotFoundCheck(List<String> wordsList, String firstArgKeyword, String command)
+            throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
         if (wordsList.indexOf(firstArgKeyword) == 1) {
-            this.uiError.displayTaskNameNotFound(firstArgKeyword,command);
-            return true;
+            String outMsg = String.format(
+                "No task name detected. Provide one between the command %s and %s as an argument. \n",
+                command, firstArgKeyword);
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
-    private boolean argKeywordNotFound(List<String> wordsList, String argKeyword, String command) {
+    private void argKeywordNotFoundCheck(List<String> wordsList, String argKeyword, String command)
+            throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
         if (!wordsList.contains(argKeyword)) {
-            this.uiError.displayArgKeywordNotFound(argKeyword, command);
-            return true;
+            String outMsg = String.format(
+                "No '%s' detected. %s is a required argument for %s. \n" , argKeyword, argKeyword, command);
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
-    private boolean argKeywordOrderWrong(List<String> wordsList, List<String> argKeywordList) {
+    private void argKeywordOrderWrongCheck(List<String> wordsList, List<String> argKeywordList)
+            throws BasilSeedInvalidInputException {
         int index = 0;
         int prevIndex = -1;
         for (String keyword : wordsList) {
@@ -97,24 +100,24 @@ public class InputParser {
                 continue; // likely is just argument to keyword
             }
             if (prevIndex >= index) {
-                this.uiError.displayArgKeywordOrderWrong(argKeywordList);
-                return true;
+                String outMsg = "Wrong keyword order.\nKeywords in order: ";
+                outMsg = outMsg + String.join(" ", argKeywordList) + "\n";
+                throw new BasilSeedInvalidInputException(outMsg);
             }
             prevIndex = index;
         }
-        return false;
     }
 
-    private boolean noArgSupplied(List<String> wordsList, List<String> argKeywordList,
-                                  String argKeyword, String argType, String command) {
+    private void noArgSupplied(List<String> wordsList, List<String> argKeywordList,
+                                  String argKeyword, String argType, String command) throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
         if ((wordsList.indexOf(argKeyword) + 1 == wordsList.size()) ||
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
-            this.uiError.displayNoArgSupplied(argKeyword, argType, command);
-            return true;
+            String outMsg = String.format("No %s %s detected. Provide one after %s as an argument. \n",
+                    command, argType, argKeyword);
+            throw new BasilSeedInvalidInputException(outMsg);
         }
-        return false;
     }
 
     private String getArg(List<String> wordsList, String argKeyword, String enderArgKeyword) {
@@ -130,43 +133,33 @@ public class InputParser {
         return taskArg;
     }
 
-    private boolean markNotValid(String inputString, String command, int bounds) {
+    private void markNotValidCheck(String inputString, String command, int bounds) throws BasilSeedInvalidInputException {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         // We are assuming command has already been verified.
         int index = -1;
-        if (wrongArgNum(wordsList, 1, command)) {
-            return true;
-        }
-        if (argNotInteger(command,wordsList)) {
-            return true;
-        }
+        wrongArgNumCheck(wordsList, 1, command);
+        argNotIntegerCheck(command,wordsList);
         index = Integer.parseInt(wordsList.get(1));
-        if (indexOutOfBounds(index, bounds)) {
-            return true;
-        } else {
-            //this.taskManager.setTaskDone(index - 1, mark);
-            return false;
-        }
+        indexOutOfBoundsCheck(index, bounds);
     }
 
-    private String validDateType(String dateString) {
+    private String validDateType(String dateString) throws BasilSeedInvalidInputException {
         List<String> dateTypes = new ArrayList<>();
         //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
         //formatters.add(DateTimeFormatter.ofPattern(INPUT_DATE_FORMAT));
         dateTypes.add(STORAGE_DATE_FORMAT);
         dateTypes.add(INPUT_DATE_FORMAT);
-
         for (String dateType : dateTypes) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);
             try {
                 LocalDate date = LocalDate.parse(dateString, formatter);
                 return dateType;
             } catch (DateTimeParseException e) {
-                // do nothing here, aka try next date format
+                // do nothing first because the other dates could be correct
             }
         }
-        this.uiError.displayValidDateType();
-        return null;
+        String outMsg = "Wrong date format! Use yyyy-mm-dd e.g. 2019-05-10 \n";
+        throw new BasilSeedInvalidInputException(outMsg);
     }
 
     /**
@@ -182,48 +175,6 @@ public class InputParser {
         return false;
     }
 
-    /**
-     * Returns the date format type of the first valid date found in the argument list.
-     *
-     * @param argList List of arguments.
-     * @return Date format string if valid date found, empty string otherwise.
-     */
-    public String getDateType(List<String> argList) {
-        this.uiError.setSilent(true);
-        for (String arg : argList) {
-            String dateType = validDateType(arg);
-            if (dateType != null && !dateType.isEmpty()) {
-                this.uiError.setSilent(false);
-                return dateType;
-            }
-        }
-        this.uiError.setSilent(false);
-        return null;
-    }
-
-
-    /**
-     * Returns the task name parsed from the input string.
-     *
-     * @param inputString User input.
-     * @return Task name.
-     */
-    public String getTaskName (String inputString, String firstArgKeyword) {
-        List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        int index = -1;
-        if (firstArgKeyword.isEmpty()){
-            // set to max so that when we subList later taskName will be the rest of the string
-            index = wordsList.size();
-        }
-        else {
-            index = wordsList.indexOf(firstArgKeyword);
-        }
-        String taskName = wordsList.subList(1, index)
-                .stream()
-                .reduce((x,y) -> x + " " + y)
-                .orElse("");
-        return taskName;
-    }
 
     /**
      * Returns all argument values parsed from the input string.
@@ -250,9 +201,9 @@ public class InputParser {
      *
      * @param inputString User input.
      * @param taskListSize Size of the task list.
-     * @return Input string if valid, empty string otherwise.
+     * @return a Command object that can take in a task manager for execution, empty string otherwise.
      */
-    public Command parse(String inputString, int taskListSize){
+    public Command parse(String inputString, int taskListSize) throws BasilSeedInvalidInputException {
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in arrayList as needed by the command.
@@ -262,8 +213,8 @@ public class InputParser {
         // https://stackoverflow.com/questions/2607289/converting-array-to-list-in-java
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         if (wordsList.isEmpty()) {
-            this.uiError.displayInvalidCommand();
-            return null;
+            String outMsg = "Woops, thats not a valid command. Try again! \n";
+            throw new BasilSeedInvalidInputException(outMsg);
         }
         String firstWord = wordsList.get(0);
         String taskName = "";
@@ -275,96 +226,57 @@ public class InputParser {
             case "list":
                 return new ListCommand(List.of());
             case "mark":
-                if (markNotValid(inputString, firstWord, taskListSize)) {
-                    return null;
-                }
+                markNotValidCheck(inputString, firstWord, taskListSize);
                 allArgs = getAllArgs(inputString, MarkCommand.KEYWORDS);
                 System.out.println("Mark command all args: " + allArgs);
                 return new MarkCommand(allArgs);
             case "unmark":
-                if (markNotValid(inputString, firstWord, taskListSize)) {
-                    return null;
-                }
+                markNotValidCheck(inputString, firstWord, taskListSize);
                 allArgs = getAllArgs(inputString, UnMarkCommand.KEYWORDS);
                 return new UnMarkCommand(allArgs);
             case "todo":
-                if (wrongArgNum(wordsList, 1, firstWord)) {
-                    return null;
-                }
+                wrongArgNumCheck(wordsList, 1, firstWord);
                 allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
                 isDone = isMarked(inputString);
                 taskName = getArg(wordsList, "", "");
                 return new  ToDoCommand(allArgs, taskName, isDone);
             case "deadline":
-                if (argKeywordNotFound(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord)) {
-                    return null;
-                }
-                if (taskNameNotFound(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord)) {
-                    return null;
-                }
-                if (noArgSupplied(wordsList, DeadlineCommand.KEYWORDS,
-                    DeadlineCommand.KEYWORDS.get(0), "date", firstWord)) {
-                    return null;
-                }
+                argKeywordNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
+                taskNameNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
+                noArgSupplied(wordsList, DeadlineCommand.KEYWORDS,
+                    DeadlineCommand.KEYWORDS.get(0), "date", firstWord);
                 allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
                 dateType = validDateType(allArgs.get(0));
-                if (dateType == null || Objects.equals(dateType, "")) {
-                    return null;
-                }
                 isDone = isMarked(inputString);
                 taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
                 return new DeadlineCommand(allArgs, taskName, isDone, dateType);
             case "event":
-                if (argKeywordNotFound(wordsList, EventCommand.KEYWORDS.get(0), firstWord) ||
-                    argKeywordNotFound(wordsList, EventCommand.KEYWORDS.get(1), firstWord)) {
-                    return null;
-                }
-                if (taskNameNotFound(wordsList, EventCommand.KEYWORDS.get(0), firstWord)) {
-                    return null;
-                }
-                if (argKeywordOrderWrong(wordsList, EventCommand.KEYWORDS)) {
-                    return null;
-                }
-                if (noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(0), "date", firstWord)
-                    || noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(1), "date",
-                    firstWord)) {
-                    return null;
-                }
-
+                argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
+                argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(1), firstWord);
+                taskNameNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
+                argKeywordOrderWrongCheck(wordsList, EventCommand.KEYWORDS);
+                noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(0), "date", firstWord);
+                noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(1), "date", firstWord);
                 allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
                 for (String arg : allArgs) {
                     dateType = validDateType(arg);
-                    if (dateType == null || Objects.equals(dateType, "")) {
-                        return null;
-                    }
                 }
                 isDone = isMarked(inputString);
                 taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
                 return new EventCommand(allArgs, taskName, isDone, dateType);
             case "delete":
-                if (wrongArgNum(wordsList, 1, firstWord)) {
-                    return null;
-                }
-                if (argNotInteger(firstWord,wordsList)) {
-                    return null;
-                }
-
+                wrongArgNumCheck(wordsList, 1, firstWord);
+                argNotIntegerCheck(firstWord,wordsList);
                 allArgs = getAllArgs(inputString, DeleteCommand.KEYWORDS);
                 index = Integer.parseInt(allArgs.get(0));
-                if (indexOutOfBounds(index, taskListSize)) {
-                    return null;
-                }
-                else {
-                    return new DeleteCommand(allArgs);
-                }
+                indexOutOfBoundsCheck(index, taskListSize);
+                return new DeleteCommand(allArgs);
             case "find":
-                if (wrongArgNum(wordsList, 1, firstWord)) {
-                    return null;
-                }
+                wrongArgNumCheck(wordsList, 1, firstWord);
                 allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
                 return new FindCommand(allArgs);
             default:
-                if (!firstWord.isEmpty() && firstWord.length() >= 3) {
+                if (firstWord.length() >= 3) {
                     switch (firstWord.substring(0,3)) {
                     case "[T]":
                         allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
@@ -382,12 +294,12 @@ public class InputParser {
                         taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
                         return new DeadlineCommand(allArgs, taskName, isDone, dateType);
                     default:
-                        this.uiError.displayInvalidCommand();
-                        return null;
+                        String outMsg = "Woops, thats not a valid command. Try again! \n";
+                        throw new BasilSeedInvalidInputException(outMsg);
                     }
                 }
-                this.uiError.displayInvalidCommand();
-                return null;
+                String outMsg = "Woops, thats not a valid command. Try again! \n";
+                throw new BasilSeedInvalidInputException(outMsg);
         }
     }
 

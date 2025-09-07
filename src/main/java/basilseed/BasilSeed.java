@@ -3,6 +3,9 @@ package basilseed;
 import java.util.ArrayList;
 import java.util.List;
 
+import basilseed.exception.BasilSeedException;
+import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.TaskManager;
 
 import basilseed.ui.UiError;
@@ -26,12 +29,12 @@ public class BasilSeed {
      * @param taskManager Task manager to populate.
      * @param uiSuccess UI handler for success messages.
      */
-    private static void startUp(InputParser inputParser, TaskManager taskManager, UiSuccess uiSuccess) {
+    private static void startUp(InputParser inputParser, TaskManager taskManager, UiSuccess uiSuccess, Storage storage)
+            throws BasilSeedIOException, BasilSeedInvalidInputException {
         /*
         Self-explanatory function. Reads storage on startup and initializes
         taskManager's tasks array list with those.
          */
-        Storage storage = new Storage();
         ArrayList<String> taskStrings = storage.read();
         uiSuccess.setSilent(true);
         for (String taskString : taskStrings) {
@@ -52,14 +55,27 @@ public class BasilSeed {
         uiStandard.displayGreeting();
         UiError uiError = new UiError();
         UiSuccess uiSuccess = new UiSuccess();
-        UiInputOutput uiIo = new UiInputOutput();
-        TaskManager taskManager = new TaskManager(uiSuccess);
         InputParser inputParser = new InputParser(uiError);
-        startUp(inputParser, taskManager, uiSuccess);
+        Storage storage;
+        TaskManager taskManager;
+
+        try {
+            storage = new Storage();
+            taskManager = new TaskManager(uiSuccess, storage);
+            startUp(inputParser, taskManager, uiSuccess, storage);
+        } catch (BasilSeedException e) {
+            uiError.displayError(e.getMessage());
+            uiError.displayError("As such, exiting now.\n");
+            return;
+        }
+
+        UiInputOutput uiIo = new UiInputOutput();
         for (String userInput = uiIo.getInput(); !userInput.equals("bye"); userInput = uiIo.getInput()) {
-            Command command = inputParser.parse(userInput, taskManager.getTaskCount());
-            if (command != null) {
+            try {
+                Command command = inputParser.parse(userInput, taskManager.getTaskCount());
                 command.execute(taskManager);
+            } catch (BasilSeedException e) {
+                uiError.displayError(e.getMessage());
             }
         }
         uiStandard.displayFarewell();
