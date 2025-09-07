@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import basilseed.task.TaskManager;
+
 import basilseed.ui.UiError;
 import basilseed.ui.UiStandard;
 import basilseed.ui.UiInputOutput;
 import basilseed.ui.UiSuccess;
+
+import basilseed.command.Command;
 
 /**
  * Entry point of the BasilSeed application.
@@ -15,27 +18,6 @@ import basilseed.ui.UiSuccess;
  * command parsing, and main execution loop.
  */
 public class BasilSeed {
-
-    /**
-     * Parses a user input string, validates it, and executes the corresponding command.
-     *
-     * @param inputString User input string.
-     * @param inputParser Parser for validating and extracting command details.
-     * @param taskManager Task manager for executing commands.
-     * @param uiSuccess UI handler for success messages.
-     */
-    private static void parseAndProcess(String inputString, InputParser inputParser, TaskManager taskManager,
-                                        UiSuccess uiSuccess) {
-        String validString = inputParser.parse(inputString, taskManager.getTaskCount());
-        if (!validString.isEmpty()) {
-            String command = inputParser.getCommand(validString);
-            String taskName = inputParser.getTaskName(validString);
-            List<String> argsList = inputParser.getAllArgs(validString);
-            String dateType = inputParser.getDateType(argsList);
-            boolean isMarked = inputParser.isMarked(validString);
-            taskManager.processCommand(command, taskName, argsList, isMarked, dateType);
-        }
-    }
 
     /**
      * Initializes the task list from storage and loads tasks into the task manager.
@@ -53,7 +35,8 @@ public class BasilSeed {
         ArrayList<String> taskStrings = storage.read();
         uiSuccess.setSilent(true);
         for (String taskString : taskStrings) {
-            parseAndProcess(taskString, inputParser, taskManager, uiSuccess);
+            Command command = inputParser.parse(taskString, taskManager.getTaskCount());
+            command.execute(taskManager);
         }
         uiSuccess.setSilent(false);
 
@@ -74,7 +57,10 @@ public class BasilSeed {
         InputParser inputParser = new InputParser(uiError);
         startUp(inputParser, taskManager, uiSuccess);
         for (String userInput = uiIo.getInput(); !userInput.equals("bye"); userInput = uiIo.getInput()) {
-            parseAndProcess(userInput, inputParser, taskManager, uiSuccess);
+            Command command = inputParser.parse(userInput, taskManager.getTaskCount());
+            if (command != null) {
+                command.execute(taskManager);
+            }
         }
         uiStandard.displayFarewell();
         uiIo.close();

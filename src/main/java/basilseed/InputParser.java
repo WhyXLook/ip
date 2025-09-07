@@ -9,11 +9,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import java.util.Map;
-
 import basilseed.task.Task;
 import basilseed.ui.UiError;
 
+import basilseed.command.Command;
+import basilseed.command.DeadlineCommand;
+import basilseed.command.DeleteCommand;
+import basilseed.command.EventCommand;
+import basilseed.command.FindCommand;
+import basilseed.command.ListCommand;
+import basilseed.command.MarkCommand;
+import basilseed.command.ToDoCommand;
+import basilseed.command.UnMarkCommand;
 
 /**
  * Parses and validates user input into commands, arguments, and task attributes.
@@ -24,21 +31,11 @@ import basilseed.ui.UiError;
 public class InputParser {
     private static final String STORAGE_DATE_FORMAT = Task.STORAGE_DATE_FORMAT;
     private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
-    /** Mapping from commands to their expected argument keywords */
-    public static final Map<String, List<String>> COMMAND_KEYWORDS_MAP = Map.of("list", List.of(""),
-        "mark", List.of(""),
-        "unmark", List.of(""),
-        "todo", List.of(""),
-        "deadline", List.of("/by"),
-        "event", List.of("/from", "/to"),
-        "delete", List.of(""),
-        "find", List.of("")
-        );
 
     private UiError uiError;
 
     /**
-     * Creates an InputParser with the specified UiError handler.
+     * Creates an InputParserCopy with the specified UiError handler.
      *
      * @param uiError UI handler for displaying errors.
      */
@@ -133,23 +130,22 @@ public class InputParser {
         return taskArg;
     }
 
-    private String parseMark(String inputString, String command, int bounds) {
+    private boolean markNotValid(String inputString, String command, int bounds) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         // We are assuming command has already been verified.
-        String outMsg = "";
         int index = -1;
         if (wrongArgNum(wordsList, 1, command)) {
-            return "";
+            return true;
         }
         if (argNotInteger(command,wordsList)) {
-            return "";
+            return true;
         }
         index = Integer.parseInt(wordsList.get(1));
         if (indexOutOfBounds(index, bounds)) {
-            return "";
+            return true;
         } else {
             //this.taskManager.setTaskDone(index - 1, mark);
-            return inputString;
+            return false;
         }
     }
 
@@ -170,7 +166,7 @@ public class InputParser {
             }
         }
         this.uiError.displayValidDateType();
-        return "";
+        return null;
     }
 
     /**
@@ -196,38 +192,15 @@ public class InputParser {
         this.uiError.setSilent(true);
         for (String arg : argList) {
             String dateType = validDateType(arg);
-            if (!dateType.isEmpty()) {
+            if (dateType != null && !dateType.isEmpty()) {
                 this.uiError.setSilent(false);
                 return dateType;
             }
         }
         this.uiError.setSilent(false);
-        return "";
+        return null;
     }
 
-    /**
-     * Returns the command keyword from an input string.
-     *
-     * @param inputString User input.
-     * @return Command string, or empty string if invalid.
-     */
-    public String getCommand (String inputString ) {
-        List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        String firstWord = wordsList.get(0);
-        List<String> commandList = new ArrayList<>(COMMAND_KEYWORDS_MAP.keySet());
-        if (commandList.contains(firstWord)) {
-            return firstWord;
-        }
-
-        if (firstWord.matches("\\[T\\]\\[.*\\]")){
-            return "todo";
-        } else if (firstWord.matches("\\[E\\]\\[.*\\]")){
-            return "event";
-        } else if (firstWord.matches("\\[D\\]\\[.*\\]")){
-            return "deadline";
-        }
-        return "";
-    }
 
     /**
      * Returns the task name parsed from the input string.
@@ -235,10 +208,8 @@ public class InputParser {
      * @param inputString User input.
      * @return Task name.
      */
-    public String getTaskName (String inputString){
+    public String getTaskName (String inputString, String firstArgKeyword) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        String command = getCommand(inputString);
-        String firstArgKeyword = COMMAND_KEYWORDS_MAP.get(command).get(0);
         int index = -1;
         if (firstArgKeyword.isEmpty()){
             // set to max so that when we subList later taskName will be the rest of the string
@@ -258,16 +229,16 @@ public class InputParser {
      * Returns all argument values parsed from the input string.
      *
      * @param inputString User input.
+     * @param argKeywords keywords that are used as signposts to parse the relevant arguments
      * @return List of argument values. Excludes the argument keywords and task name.
      */
-    public List<String> getAllArgs (String inputString) {
+    public List<String> getAllArgs (String inputString, List<String> argKeywords) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        String command = getCommand(inputString);
-        List<String> argKeywords = new ArrayList<>(COMMAND_KEYWORDS_MAP.get(command));
-        argKeywords.add("");
+        List<String> argKeywordArrayList = new ArrayList<>(argKeywords);
+        argKeywordArrayList.add("");
         List<String> allArgs = new ArrayList<>();
-        for (int index = 0; index < argKeywords.size() - 1; index++) {
-            String arg = getArg(wordsList, argKeywords.get(index), argKeywords.get(index + 1));
+        for (int index = 0; index < argKeywordArrayList.size() - 1; index++) {
+            String arg = getArg(wordsList, argKeywordArrayList.get(index), argKeywordArrayList.get(index + 1));
             allArgs.add(arg);
         }
         return allArgs;
@@ -281,7 +252,7 @@ public class InputParser {
      * @param taskListSize Size of the task list.
      * @return Input string if valid, empty string otherwise.
      */
-    public String parse(String inputString, int taskListSize){
+    public Command parse(String inputString, int taskListSize){
         /*
         Function to parse user input, checking if its a command keyword. i.e. List
         Modify the passed in arrayList as needed by the command.
@@ -290,89 +261,133 @@ public class InputParser {
         // conversion from string arrays to List string Solution below inspired by
         // https://stackoverflow.com/questions/2607289/converting-array-to-list-in-java
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        //ArrayList<String> argsList = new ArrayList<>();
-        String command = getCommand(wordsList.get(0));
-        //boolean isMarked = isMarked(wordsList.get(0));
-        String taskArg = "";
-        String dateType = "";
-        int index = -1;
-        switch (command) {
-        case "list":
-            return inputString;
-        case "mark":
-            return parseMark(inputString, command, taskListSize);
-        case "unmark":
-            return parseMark(inputString, command, taskListSize);
-        case "todo":
-            if (wrongArgNum(wordsList, 1, command)) {
-                return "";
-            }
-            return inputString;
-        case "deadline":
-            if (argKeywordNotFound(wordsList, "/by", command)) {
-                return "";
-            }
-            if (taskNameNotFound(wordsList,"/by", command)) {
-                return "";
-            }
-            if (noArgSupplied(wordsList, List.of("/by"),
-                    "/by", "date", command)) {
-                return "";
-            }
-            taskArg = getArg(wordsList, "/by","" );
-            dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")) {
-                return "";
-            }
-            return inputString;
-        case "event":
-            if (argKeywordNotFound(wordsList, "/from", command) ||
-                    argKeywordNotFound(wordsList, "/to", command)) {
-                return "";
-            }
-            if (taskNameNotFound(wordsList, "/from", command)) {
-                return "";
-            }
-            if (argKeywordOrderWrong(wordsList, List.of("/from", "/to"))) {
-                return "";
-            }
-            if (noArgSupplied(wordsList, List.of("/from", "/to"), "/from", "date", command)
-            || noArgSupplied(wordsList, List.of("/from", "/to"), "/to", "date", command)) {
-                return "";
-            }
-            taskArg = getArg(wordsList, "/from","/to" );
-            dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")) {
-                return "";
-            }
-            taskArg = getArg(wordsList, "/to","");
-            dateType = validDateType(taskArg);
-            if (Objects.equals(dateType, "")) {
-                return "";
-            }
-            return inputString;
-        case "delete":
-            if (wrongArgNum(wordsList, 1, command)) {
-                return "";
-            }
-            if (argNotInteger(command,wordsList)) {
-                return "";
-            }
-            index = Integer.parseInt(wordsList.get(1));
-            if (indexOutOfBounds(index, taskListSize)) {
-                return "";
-            }
-            else {
-                return inputString;
-            }
-        case "find":
-            if (wrongArgNum(wordsList, 1, command)) {
-                return "";
-            }
-            return inputString;
-        default:
+        if (wordsList.isEmpty()) {
             this.uiError.displayInvalidCommand();
-            return "";
+            return null;
+        }
+        String firstWord = wordsList.get(0);
+        String taskName = "";
+        String dateType = "";
+        List<String> allArgs;
+        boolean isDone = false;
+        int index = -1;
+        switch (firstWord) {
+            case "list":
+                return new ListCommand(List.of());
+            case "mark":
+                if (markNotValid(inputString, firstWord, taskListSize)) {
+                    return null;
+                }
+                allArgs = getAllArgs(inputString, MarkCommand.KEYWORDS);
+                System.out.println("Mark command all args: " + allArgs);
+                return new MarkCommand(allArgs);
+            case "unmark":
+                if (markNotValid(inputString, firstWord, taskListSize)) {
+                    return null;
+                }
+                allArgs = getAllArgs(inputString, UnMarkCommand.KEYWORDS);
+                return new UnMarkCommand(allArgs);
+            case "todo":
+                if (wrongArgNum(wordsList, 1, firstWord)) {
+                    return null;
+                }
+                allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
+                isDone = isMarked(inputString);
+                taskName = getArg(wordsList, "", "");
+                return new  ToDoCommand(allArgs, taskName, isDone);
+            case "deadline":
+                if (argKeywordNotFound(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord)) {
+                    return null;
+                }
+                if (taskNameNotFound(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord)) {
+                    return null;
+                }
+                if (noArgSupplied(wordsList, DeadlineCommand.KEYWORDS,
+                    DeadlineCommand.KEYWORDS.get(0), "date", firstWord)) {
+                    return null;
+                }
+                allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
+                dateType = validDateType(allArgs.get(0));
+                if (dateType == null || Objects.equals(dateType, "")) {
+                    return null;
+                }
+                isDone = isMarked(inputString);
+                taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
+                return new DeadlineCommand(allArgs, taskName, isDone, dateType);
+            case "event":
+                if (argKeywordNotFound(wordsList, EventCommand.KEYWORDS.get(0), firstWord) ||
+                    argKeywordNotFound(wordsList, EventCommand.KEYWORDS.get(1), firstWord)) {
+                    return null;
+                }
+                if (taskNameNotFound(wordsList, EventCommand.KEYWORDS.get(0), firstWord)) {
+                    return null;
+                }
+                if (argKeywordOrderWrong(wordsList, EventCommand.KEYWORDS)) {
+                    return null;
+                }
+                if (noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(0), "date", firstWord)
+                    || noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(1), "date",
+                    firstWord)) {
+                    return null;
+                }
+
+                allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
+                for (String arg : allArgs) {
+                    dateType = validDateType(arg);
+                    if (dateType == null || Objects.equals(dateType, "")) {
+                        return null;
+                    }
+                }
+                isDone = isMarked(inputString);
+                taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
+                return new EventCommand(allArgs, taskName, isDone, dateType);
+            case "delete":
+                if (wrongArgNum(wordsList, 1, firstWord)) {
+                    return null;
+                }
+                if (argNotInteger(firstWord,wordsList)) {
+                    return null;
+                }
+
+                allArgs = getAllArgs(inputString, DeleteCommand.KEYWORDS);
+                index = Integer.parseInt(allArgs.get(0));
+                if (indexOutOfBounds(index, taskListSize)) {
+                    return null;
+                }
+                else {
+                    return new DeleteCommand(allArgs);
+                }
+            case "find":
+                if (wrongArgNum(wordsList, 1, firstWord)) {
+                    return null;
+                }
+                allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
+                return new FindCommand(allArgs);
+            default:
+                if (!firstWord.isEmpty() && firstWord.length() >= 3) {
+                    switch (firstWord.substring(0,3)) {
+                    case "[T]":
+                        allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
+                        isDone = isMarked(inputString);
+                        taskName = getArg(wordsList, "", "");
+                        return new  ToDoCommand(allArgs, taskName, isDone);
+                    case "[E]":
+                        allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
+                        dateType = validDateType(allArgs.get(0));
+                        taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
+                        return new EventCommand(allArgs, taskName, isDone, dateType);
+                    case "[D]":
+                        allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
+                        dateType = validDateType(allArgs.get(0));
+                        taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
+                        return new DeadlineCommand(allArgs, taskName, isDone, dateType);
+                    default:
+                        this.uiError.displayInvalidCommand();
+                        return null;
+                    }
+                }
+                this.uiError.displayInvalidCommand();
+                return null;
         }
     }
 

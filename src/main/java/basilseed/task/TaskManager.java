@@ -35,15 +35,11 @@ public class TaskManager {
         storage.write(outputString);
     }
 
-    private List<String> getAllTasks() {
-        List<String> taskStringList = tasks.stream()
-                .map(task -> task.toString())
-                .toList();
-        return taskStringList;
-    }
-
-    private void listTasks(List<String> taskStringList){
-        uiSuccess.displayTaskList(taskStringList);
+    private void addTask(Task task, boolean isDone) {
+        task.setDone(isDone);
+        this.tasks.add(task);
+        updateStorage();
+        this.uiSuccess.displayTaskAdded(task.toString(), this.tasks.size());
     }
 
     /**
@@ -55,28 +51,25 @@ public class TaskManager {
         return tasks.size();
     }
 
-    private void setTaskDone(int index, boolean done) {
-        this.tasks.get(index).setDone(done);
+    public List<String> getAllTasks() {
+        List<String> taskStringList = tasks.stream()
+                .map(task -> task.toString())
+                .toList();
+        return taskStringList;
+    }
+
+    public void listTasks(List<String> taskStringList){
+        uiSuccess.displayTaskList(taskStringList);
+    }
+
+    public void setTaskDone(int index, boolean done) {
+        this.tasks.get(index - 1).setDone(done);
         updateStorage();
         String outMsg;
-        this.uiSuccess.displayTaskMarked(this.tasks.get(index).toString(), done);
+        this.uiSuccess.displayTaskMarked(this.tasks.get(index - 1).toString(), done);
     }
 
-    private void addTask(Task task, boolean isDone) {
-        task.setDone(isDone);
-        this.tasks.add(task);
-        updateStorage();
-        this.uiSuccess.displayTaskAdded(task.toString(), this.tasks.size());
-    }
-
-    private void deleteTask (int index) {
-        Task task = tasks.get(index);
-        this.tasks.remove(index);
-        updateStorage();
-        this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
-    }
-
-    private List<String> findTask (String keyword) {
+    public void findTask (String keyword) {
         ArrayList<String> taskStringList = new ArrayList<>(getAllTasks());
         ArrayList<String> foundTaskList = new ArrayList<>();
         for (String taskString : taskStringList) {
@@ -84,51 +77,30 @@ public class TaskManager {
                 foundTaskList.add(taskString);
             }
         }
-        return foundTaskList;
+        listTasks(foundTaskList);
     }
 
-    /**
-     * Processes a command string and executes the corresponding task operation.
-     *
-     * @param command Command to execute (list, mark, unmark, todo, deadline, event, delete).
-     * @param taskName Name of the task (for todo, deadline, event).
-     * @param args Arguments for the command (such as dates or indices).
-     * @param isDone Initial completion state for the new task.
-     * @param dateType Format of the date string (for deadline and event).
-     */
-    public void processCommand (String command, String taskName, List<String> args, boolean isDone,
-                         String dateType) {
-        Task task;
-        switch(command) {
-        case "list":
-            listTasks(getAllTasks());
-            break;
-        case "mark":
-            setTaskDone(Integer.parseInt(args.get(0)) - 1, true);
-            break;
-        case "unmark":
-            setTaskDone(Integer.parseInt(args.get(0)) - 1, false);
-            break;
-        case "todo":
-            task = new ToDo(taskName);
-            addTask(task, isDone);
-            break;
-        case "deadline":
-            task = new Deadline(taskName, args.get(0), dateType);
-            addTask(task, isDone);
-            break;
-        case "event":
-            task = new Event(taskName, args.get(0), args.get(1), dateType);
-            addTask(task, isDone);
-            break;
-        case "delete":
-            deleteTask(Integer.parseInt(args.get(0)) - 1);
-            break;
-        case "find":
-            listTasks(findTask(taskName));
-            break;
-        default:
-            break;
-        }
+    public void deleteTask (int index) {
+        Task task = tasks.get(index - 1);
+        this.tasks.remove(index - 1);
+        updateStorage();
+        this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
     }
+
+    public void addToDoTask(String taskName, boolean isDone) {
+        Task task = new ToDo(taskName);
+        addTask(task, isDone);
+    }
+
+    public void addDeadlineTask(String taskName, boolean isDone, String dueDate, String dateType) {
+        Task task = new Deadline(taskName, dueDate, dateType);
+        addTask(task, isDone);
+    }
+
+    public void addEventTask(String eventName, boolean isDone, String fromDate, String toDate, String dateType) {
+        Task task = new Event(eventName, fromDate, toDate, dateType);
+        addTask(task, isDone);
+    }
+
+
 }
