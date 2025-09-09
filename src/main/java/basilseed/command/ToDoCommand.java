@@ -1,6 +1,6 @@
 package basilseed.command;
 
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 import basilseed.task.TaskManager;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Represents a ToDo command with arguments and execute function defined
  *
  */
-public class ToDoCommand extends Command{
+public class ToDoCommand extends Command {
     public static final List<String> KEYWORDS = List.of("");
     private String taskName;
     private boolean isDone;
@@ -31,8 +31,9 @@ public class ToDoCommand extends Command{
      *
      * @param taskManager the task manager which will dictate how the command
      *                    executes
+     * @return result of command as a String
      */
-    public void execute(TaskManager taskManager) throws BasilSeedIOException {
-        taskManager.addToDoTask(this.taskName, this.isDone);
+    public String execute(TaskManager taskManager) throws BasilSeedIoException {
+        return taskManager.addToDoTask(this.taskName, this.isDone);
     }
 }

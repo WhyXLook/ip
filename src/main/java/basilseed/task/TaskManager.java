@@ -1,8 +1,7 @@
 package basilseed.task;
 
 import basilseed.Storage;
-import basilseed.exception.BasilSeedException;
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 import basilseed.ui.UiSuccess;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class TaskManager {
         this.storage = storage;
     }
 
-    private void updateStorage() throws BasilSeedIOException {
+    private void updateStorage() throws BasilSeedIoException {
         ArrayList<String> outputString = new ArrayList<>();
         for (Task task : tasks) {
             String taskString = task.toString();
@@ -38,11 +37,11 @@ public class TaskManager {
         storage.write(outputString);
     }
 
-    private void addTask(Task task, boolean isDone) throws BasilSeedIOException {
+    private String addTask(Task task, boolean isDone) throws BasilSeedIoException {
         task.setDone(isDone);
         this.tasks.add(task);
         updateStorage();
-        this.uiSuccess.displayTaskAdded(task.toString(), this.tasks.size());
+        return this.uiSuccess.displayTaskAdded(task.toString(), this.tasks.size());
     }
 
     /**
@@ -50,7 +49,7 @@ public class TaskManager {
      *
      * @return Number of tasks.
      */
-    public int getTaskCount(){
+    public int getTaskCount() {
         return tasks.size();
     }
 
@@ -70,25 +69,34 @@ public class TaskManager {
      * Displays the provided list of tasks to the user.
      *
      * @param taskStringList List of task descriptions to display.
+     * @return a String of all tasks as their string representation
      */
-    public void listTasks(List<String> taskStringList){
-        uiSuccess.displayTaskList(taskStringList);
+    public String listTasks(List<String> taskStringList) {
+        return uiSuccess.displayTaskList(taskStringList);
     }
 
     /**
      * Sets the completion status of the specified task.
      *
      * @param index 1-based index of the task in the list.
-     * @param done True if the task should be marked done, false otherwise.
+     * @param done  True if the task should be marked done, false otherwise.
+     * @return a String stating task has been marked done or not depending on done param
      */
-    public void setTaskDone(int index, boolean done) throws BasilSeedIOException {
+    public String setTaskDone(int index, boolean done) throws BasilSeedIoException {
         this.tasks.get(index - 1).setDone(done);
         updateStorage();
         String outMsg;
-        this.uiSuccess.displayTaskMarked(this.tasks.get(index - 1).toString(), done);
+        return this.uiSuccess.displayTaskMarked(this.tasks.get(index - 1).toString(), done);
     }
 
-    public void findTask (String keyword) {
+    /**
+     * Searches for tasks whose string representation contains the given keyword.
+     * Matching is done using regular expression matching.
+     *
+     * @param keyword Keyword to search for within task descriptions.
+     * @return a String of all matched tasks
+     */
+    public String findTask(String keyword) {
         ArrayList<String> taskStringList = new ArrayList<>(getAllTasks());
         ArrayList<String> foundTaskList = new ArrayList<>();
         for (String taskString : taskStringList) {
@@ -96,31 +104,71 @@ public class TaskManager {
                 foundTaskList.add(taskString);
             }
         }
-        listTasks(foundTaskList);
+        return listTasks(foundTaskList);
     }
 
-    public void deleteTask (int index) throws BasilSeedIOException {
+    /**
+     * Deletes the task at the specified 1-based index from the task list.
+     * Updates persistent storage and displays the deletion to the user.
+     *
+     * @param index 1-based index of the task to delete.
+     * @return a String stating task has been deleted
+     * @throws BasilSeedIoException If an I/O error occurs while updating storage.
+     */
+    public String deleteTask(int index) throws BasilSeedIoException {
         Task task = tasks.get(index - 1);
         this.tasks.remove(index - 1);
         updateStorage();
-        this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
+        return this.uiSuccess.displayTaskDeleted(task.toString(), this.tasks.size());
     }
 
-    public void addToDoTask(String taskName, boolean isDone) throws BasilSeedIOException {
+    /**
+     * Adds a new ToDo task to the task list.
+     * Updates persistent storage and displays confirmation to the user.
+     *
+     * @param taskName Name of the ToDo task.
+     * @param isDone   Whether the task should be initially marked as done.
+     * @return a String stating task has been added
+     * @throws BasilSeedIoException If an I/O error occurs while updating storage.
+     */
+    public String addToDoTask(String taskName, boolean isDone) throws BasilSeedIoException {
         Task task = new ToDo(taskName);
-        addTask(task, isDone);
+        return addTask(task, isDone);
     }
 
-    public void addDeadlineTask(String taskName, boolean isDone, String dueDate, String dateType)
-            throws BasilSeedIOException {
+    /**
+     * Adds a new Deadline task to the task list with the given due date.
+     * Updates persistent storage and displays confirmation to the user.
+     *
+     * @param taskName Name of the deadline task.
+     * @param isDone   Whether the task should be initially marked as done.
+     * @param dueDate  Deadline date string.
+     * @param dateType Date format pattern used to parse dueDate
+     * @return a String stating task has been added
+     * @throws BasilSeedIoException If an I/O error occurs while updating storage.
+     */
+    public String addDeadlineTask(String taskName, boolean isDone, String dueDate, String dateType)
+            throws BasilSeedIoException {
         Task task = new Deadline(taskName, dueDate, dateType);
-        addTask(task, isDone);
+        return addTask(task, isDone);
     }
 
-    public void addEventTask(String eventName, boolean isDone, String fromDate, String toDate, String dateType)
-            throws BasilSeedIOException {
+    /**
+     * Adds a new Event task to the task list with the given start and end dates.
+     * Updates persistent storage and displays confirmation to the user.
+     *
+     * @param eventName Name of the event task.
+     * @param isDone    Whether the task should be initially marked as done.
+     * @param fromDate  Start date string of the event.
+     * @param toDate    End date string of the event.
+     * @param dateType  Date format pattern used to parse the date arguments
+     * @return a String stating task has been added
+     * @throws BasilSeedIoException If an I/O error occurs while updating storage.
+     */
+    public String addEventTask(String eventName, boolean isDone, String fromDate, String toDate, String dateType)
+            throws BasilSeedIoException {
         Task task = new Event(eventName, fromDate, toDate, dateType);
-        addTask(task, isDone);
+        return addTask(task, isDone);
     }
 
 

@@ -1,7 +1,5 @@
 package basilseed;
 
-import basilseed.ui.UiError;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 
 /**
  * Provides persistent storage for tasks.
@@ -18,25 +16,16 @@ import basilseed.exception.BasilSeedIOException;
  */
 public class Storage {
     public static final String DEFAULT_FILE_PATH = "./src/main/java/basilseed/data/tasks.txt";
-    private static final String IOError = String.format("Something went Wrong with IO. Check your perms and file path!\n" +
-            "Default is at %s\n", DEFAULT_FILE_PATH);
+    private static final String IO_ERROR = String.format("Something went Wrong with IO. "
+        + "Check your perms and file path!\n"
+        + "Default is at %s\n", DEFAULT_FILE_PATH);
     private Path path;
 
-    private static void createFileIfNotExists(String filePath) throws BasilSeedIOException {
-        Path path = Paths.get(filePath);
-        if (! Files.exists(path)) {
-            try {
-                Files.createFile(path);
-            } catch (IOException e) {
-                throw new BasilSeedIOException(IOError);
-            }
-        }
-    }
 
     /**
      * Creates a Storage instance with the default file path.
      */
-    public Storage() throws BasilSeedIOException {
+    public Storage() throws BasilSeedIoException {
         this.path = Paths.get(DEFAULT_FILE_PATH);
         createFileIfNotExists(DEFAULT_FILE_PATH);
     }
@@ -46,9 +35,20 @@ public class Storage {
      *
      * @param fileUrl Path to the storage file.
      */
-    public Storage(String fileUrl) throws BasilSeedIOException {
+    public Storage(String fileUrl) throws BasilSeedIoException {
         this.path = Paths.get(fileUrl);
         createFileIfNotExists(fileUrl);
+    }
+
+    private static void createFileIfNotExists(String filePath) throws BasilSeedIoException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            try {
+                Files.createFile(path);
+            } catch (IOException e) {
+                throw new BasilSeedIoException(IO_ERROR);
+            }
+        }
     }
 
     /**
@@ -56,11 +56,11 @@ public class Storage {
      *
      * @param lines List of strings to write.
      */
-    public void write(List<String> lines) throws BasilSeedIOException {
+    public void write(List<String> lines) throws BasilSeedIoException {
         try {
             Files.write(this.path, lines);
         } catch (IOException e) {
-            throw new BasilSeedIOException(IOError);
+            throw new BasilSeedIoException(IO_ERROR);
         }
     }
 
@@ -69,12 +69,12 @@ public class Storage {
      *
      * @return List of strings read from storage.
      */
-    public ArrayList<String> read() throws BasilSeedIOException {
+    public ArrayList<String> read() throws BasilSeedIoException {
         List<String> lines = new ArrayList<>();
         try {
             lines = Files.readAllLines(this.path);
         } catch (IOException e) {
-            throw new BasilSeedIOException(IOError);
+            throw new BasilSeedIoException(IO_ERROR);
         }
         ArrayList<String> outLines = new ArrayList<>(lines);
         return outLines;

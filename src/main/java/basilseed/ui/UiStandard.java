@@ -27,18 +27,22 @@ public class UiStandard extends Ui {
 
     /**
      * Displays the greeting message.
+     *
+     * @return a greeting string
      */
-    public void displayGreeting() {
-        String greeting = " Hello! I'm BasilSeed \n" +
-                " What can I do for you?\n";
-        super.displayMessage(greeting);
+    public String displayGreeting() {
+        String greeting = " Hello! I'm BasilSeed \n"
+            + " What can I do for you?\n";
+        return super.displayMessage(greeting);
     }
 
     /**
      * Displays the farewell message.
+     *
+     * @return a farewell string
      */
-    public void displayFarewell() {
+    public String displayFarewell() {
         String farewell = "Bye. Hope to see you again soon! \n";
-        super.displayMessage(farewell);
+        return super.displayMessage(farewell);
     }
 }

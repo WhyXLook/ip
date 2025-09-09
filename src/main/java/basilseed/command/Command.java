@@ -1,6 +1,6 @@
 package basilseed.command;
 
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 import basilseed.task.TaskManager;
 
 import java.util.List;
@@ -28,7 +28,8 @@ public abstract class Command {
      *
      * @param taskManager the task manager which will dictate how the command
      *                    executes
+     * @return result of command as a String
      */
-    public abstract void execute(TaskManager taskManager) throws BasilSeedIOException;
+    public abstract String execute(TaskManager taskManager) throws BasilSeedIoException;
 
 }
