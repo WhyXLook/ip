@@ -1,6 +1,6 @@
 package basilseed.command;
 
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 import basilseed.task.TaskManager;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Represents a Mark command with arguments and execute function defined
  *
  */
-public class MarkCommand extends Command{
+public class MarkCommand extends Command {
     public static final List<String> KEYWORDS = List.of("");
     private int index;
 
@@ -28,8 +28,9 @@ public class MarkCommand extends Command{
      *
      * @param taskManager the task manager which will dictate how the command
      *                    executes
+     * @return result of command as a String
      */
-    public void execute(TaskManager taskManager) throws BasilSeedIOException {
-        taskManager.setTaskDone(index, true);
+    public String execute(TaskManager taskManager) throws BasilSeedIoException {
+        return taskManager.setTaskDone(index, true);
     }
 }

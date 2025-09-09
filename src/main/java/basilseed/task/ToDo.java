@@ -8,7 +8,7 @@ public class ToDo extends Task {
      * Constructs a ToDo with the specified name
      * @param name the name of the ToDo task
      */
-    public ToDo(String name){
+    public ToDo(String name) {
         super(name);
     }
 

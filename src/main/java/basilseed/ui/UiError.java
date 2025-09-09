@@ -1,7 +1,5 @@
 package basilseed.ui;
 
-import java.util.List;
-
 /**
  * Handles error messages and displays messages for invalid inputs.
  */
@@ -30,9 +28,10 @@ public class UiError extends Ui {
      * Displays a message of error type given the string argument
      *
      * @param message error message to be displayed
+     * @return a String given by the message param
      */
-    public void displayError(String message) {
-        super.displayMessage(message);
+    public String displayError(String message) {
+        return super.displayMessage(message);
     }
 
 

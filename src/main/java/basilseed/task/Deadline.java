@@ -26,7 +26,8 @@ public class Deadline extends Task {
     }
 
     @Override
-    // DateTimeFormatter came from https://stackoverflow.com/questions/39689866/how-to-format-localdate-object-to-mm-dd-yyyy-and-have-format-persist
+    // DateTimeFormatter came from https://stackoverflow.com/questions/39689866/how-to-format-localdate-
+    // object-to-mm-dd-yyyy-and-have-format-persist
     public String toString() {
         return "[D]" + super.toString() + " /by " + formatDate(this.by);
     }

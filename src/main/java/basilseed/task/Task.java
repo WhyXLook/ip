@@ -13,6 +13,12 @@ public abstract class Task {
     protected String name;
     protected boolean isDone;
 
+    /**
+     * Creates a new task with the given name.
+     * The task is initialized as not done.
+     *
+     * @param name Name or description of the task.
+     */
     public Task(String name) {
         this.name = name;
         this.isDone = false;
@@ -36,7 +42,7 @@ public abstract class Task {
         this.isDone = inputBoolean;
     }
 
-    protected static String formatDate (LocalDate date) {
+    protected static String formatDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT);
         String dateString = date.format(formatter);
         return dateString;
@@ -44,7 +50,7 @@ public abstract class Task {
 
     @Override
     public String toString() {
-        String outMsg =  "[" + this.getStatusIcon() + "] " + this.name;
+        String outMsg = "[" + this.getStatusIcon() + "] " + this.name;
         return outMsg;
     }
 }
