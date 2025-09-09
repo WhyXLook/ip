@@ -33,7 +33,7 @@ public class UiInputOutput extends Ui {
      *
      * @return User input string.
      */
-    public String getInput(){
+    public String getInput() {
         return this.scanner.nextLine();
     }
 

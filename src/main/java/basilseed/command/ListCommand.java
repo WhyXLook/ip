@@ -8,7 +8,7 @@ import java.util.List;
  * Represents a List command with arguments and execute function defined
  *
  */
-public class ListCommand extends Command{
+public class ListCommand extends Command {
     public static final List<String> KEYWORDS = List.of("");
 
     /**
@@ -25,8 +25,9 @@ public class ListCommand extends Command{
      *
      * @param taskManager the task manager which will dictate how the command
      *                    executes
+     * @return result of command as a String
      */
-    public void execute(TaskManager taskManager) {
-        taskManager.listTasks(taskManager.getAllTasks());
+    public String execute(TaskManager taskManager) {
+        return taskManager.listTasks(taskManager.getAllTasks());
     }
 }

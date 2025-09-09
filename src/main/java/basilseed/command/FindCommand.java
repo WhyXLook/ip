@@ -8,7 +8,7 @@ import java.util.List;
  * Represents a Find command with arguments and execute function defined
  *
  */
-public class FindCommand extends Command{
+public class FindCommand extends Command {
     public static final List<String> KEYWORDS = List.of("");
     private String keyword;
 
@@ -27,8 +27,9 @@ public class FindCommand extends Command{
      *
      * @param taskManager the task manager which will dictate how the command
      *                    executes
+     * @return result of command as a String
      */
-    public void execute(TaskManager taskManager) {
-        taskManager.findTask(this.keyword);
+    public String execute(TaskManager taskManager) {
+        return taskManager.findTask(this.keyword);
     }
 }

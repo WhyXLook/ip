@@ -30,13 +30,14 @@ public class UiSuccess extends Ui {
      * Displays the current list of tasks with their indices.
      *
      * @param taskList the list of task string representations
+     * @return a String of all tasks as their string representation
      */
-    public void displayTaskList(List<String> taskList) {
-        String outMsg =  "";
+    public String displayTaskList(List<String> taskList) {
+        String outMsg = "";
         for (int i = 0; i < taskList.size(); i++) {
             outMsg = outMsg + (i + 1) + "." + taskList.get(i) + "\n";
         }
-        super.displayMessage(outMsg);
+        return super.displayMessage(outMsg);
     }
 
     /**
@@ -44,15 +45,16 @@ public class UiSuccess extends Ui {
      *
      * @param taskString the task description
      * @param isDone     true if the task is now marked done, false if unmarked
+     * @return a String stating task has been marked done or not depending on done param
      */
-    public void displayTaskMarked(String taskString, boolean isDone){
+    public String displayTaskMarked(String taskString, boolean isDone) {
         String outMsg = "";
         if (isDone) {
-            outMsg =  "Nice! I've marked this task as done: " + taskString + "\n";
+            outMsg = "Nice! I've marked this task as done: " + taskString + "\n";
         } else {
             outMsg = "OK, I've marked this task as not done yet: " + taskString + "\n";
         }
-        displayMessage(outMsg);
+        return super.displayMessage(outMsg);
     }
 
     /**
@@ -60,12 +62,13 @@ public class UiSuccess extends Ui {
      *
      * @param taskString the task description
      * @param totalTasks the total number of tasks after addition
+     * @return a String stating task has been added
      */
-    public void displayTaskAdded(String taskString, int totalTasks) {
-        String outMsg = "Got it. I've added this task:\n" +
-            taskString + "\n" +
-            "Now you have " + totalTasks + " tasks in the list.\n";
-        super.displayMessage(outMsg);
+    public String displayTaskAdded(String taskString, int totalTasks) {
+        String outMsg = "Got it. I've added this task:\n"
+            + taskString + "\n"
+            + "Now you have " + totalTasks + " tasks in the list.\n";
+        return super.displayMessage(outMsg);
     }
 
     /**
@@ -73,11 +76,12 @@ public class UiSuccess extends Ui {
      *
      * @param taskString the task description
      * @param totalTasks the total number of tasks after deletion
+     * @return a String stating task has been deleted
      */
-    public void displayTaskDeleted(String taskString, int totalTasks) {
-        String outMsg = "Noted. I've removed this task:\n" +
-            taskString + "\n" +
-            "Now you have " + totalTasks + " tasks in the list.\n";
-        super.displayMessage(outMsg);
+    public String displayTaskDeleted(String taskString, int totalTasks) {
+        String outMsg = "Noted. I've removed this task:\n"
+            + taskString + "\n"
+            + "Now you have " + totalTasks + " tasks in the list.\n";
+        return super.displayMessage(outMsg);
     }
 }

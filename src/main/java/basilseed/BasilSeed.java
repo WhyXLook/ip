@@ -1,10 +1,9 @@
 package basilseed;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import basilseed.exception.BasilSeedException;
-import basilseed.exception.BasilSeedIOException;
+import basilseed.exception.BasilSeedIoException;
 import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.TaskManager;
 
@@ -21,6 +20,24 @@ import basilseed.command.Command;
  * command parsing, and main execution loop.
  */
 public class BasilSeed {
+    private final InputParser inputParser;
+    private final TaskManager taskManager;
+    private final UiError uiError;
+    private final UiStandard uiStandard;
+    private final UiSuccess uiSuccess;
+
+    public BasilSeed() throws BasilSeedException {
+        this.uiSuccess = new UiSuccess();
+        this.uiStandard = new UiStandard();
+        this.uiError = new UiError();
+        this.inputParser = new InputParser();
+        Storage storage = new Storage();
+        this.taskManager = new TaskManager(uiSuccess, storage);
+
+        startUp(inputParser, taskManager, uiSuccess, storage);
+
+    }
+
 
     /**
      * Initializes the task list from storage and loads tasks into the task manager.
@@ -30,7 +47,7 @@ public class BasilSeed {
      * @param uiSuccess UI handler for success messages.
      */
     private static void startUp(InputParser inputParser, TaskManager taskManager, UiSuccess uiSuccess, Storage storage)
-            throws BasilSeedIOException, BasilSeedInvalidInputException {
+            throws BasilSeedIoException, BasilSeedInvalidInputException {
         /*
         Self-explanatory function. Reads storage on startup and initializes
         taskManager's tasks array list with those.
@@ -46,39 +63,29 @@ public class BasilSeed {
     }
 
     /**
-     * Main entry point of the BasilSeed program.
+     * Returns the greeting message.
      *
-     * @param args Command line arguments (not used).
+     * @return the greeting string
      */
-    public static void main(String[] args) {
-        UiStandard uiStandard = new UiStandard();
-        uiStandard.displayGreeting();
-        UiError uiError = new UiError();
-        UiSuccess uiSuccess = new UiSuccess();
-        InputParser inputParser = new InputParser(uiError);
-        Storage storage;
-        TaskManager taskManager;
+    public String getGreeting() {
+        return this.uiStandard.displayGreeting();
+    }
 
+    /**
+     * Returns the farewell message.
+     *
+     * @return a farewell string
+     */
+    public String getFarewell(){
+        return this.uiStandard.displayFarewell();
+    }
+
+    public String getResponse(String userInput) {
         try {
-            storage = new Storage();
-            taskManager = new TaskManager(uiSuccess, storage);
-            startUp(inputParser, taskManager, uiSuccess, storage);
-        } catch (BasilSeedException e) {
-            uiError.displayError(e.getMessage());
-            uiError.displayError("As such, exiting now.\n");
-            return;
+            Command command = this.inputParser.parse(userInput, taskManager.getTaskCount());
+            return command.execute(taskManager);
+        } catch (BasilSeedException e){
+            return e.getMessage();
         }
-
-        UiInputOutput uiIo = new UiInputOutput();
-        for (String userInput = uiIo.getInput(); !userInput.equals("bye"); userInput = uiIo.getInput()) {
-            try {
-                Command command = inputParser.parse(userInput, taskManager.getTaskCount());
-                command.execute(taskManager);
-            } catch (BasilSeedException e) {
-                uiError.displayError(e.getMessage());
-            }
-        }
-        uiStandard.displayFarewell();
-        uiIo.close();
     }
 }

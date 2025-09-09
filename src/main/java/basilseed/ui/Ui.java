@@ -39,12 +39,11 @@ public abstract class Ui {
         System.out.println("____________________________________________________________\n");
     }
 
-    protected void displayMessage(String message) {
+    protected String displayMessage(String message) {
         if (!this.isSilent) {
-            displayLine();
-            System.out.print(message);
-            displayLine();
+            return message;
         }
+        return "";
     }
 
 }
