@@ -129,8 +129,6 @@ public class InputParser {
 
     private String validDateType(String dateString) throws BasilSeedInvalidInputException {
         List<String> dateTypes = new ArrayList<>();
-        //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
-        //formatters.add(DateTimeFormatter.ofPattern(INPUT_DATE_FORMAT));
         dateTypes.add(STORAGE_DATE_FORMAT);
         dateTypes.add(INPUT_DATE_FORMAT);
         for (String dateType : dateTypes) {
