@@ -8,13 +8,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import basilseed.Storage;
-import basilseed.ui.UiError;
+import basilseed.exception.BasilSeedIoException;
 
 import basilseed.ui.UiSuccess;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class TaskManagerTest {
 
     @BeforeEach
@@ -38,19 +39,18 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void processCommand_success() {
+    public void processCommand_success() throws BasilSeedIoException {
         UiSuccess uiSuccess = new UiSuccess();
-        TaskManager taskManager = new TaskManager(uiSuccess);
-        taskManager.processCommand("todo", "borrow book", List.of(""), false, "");
+        Storage storage = new Storage();
+        TaskManager taskManager = new TaskManager(uiSuccess, storage);
+        taskManager.addToDoTask("borrow book", false);
         assertEquals(1, taskManager.getTaskCount());
-        taskManager.processCommand("deadline", "book", List.of("2025-01-02"), false,
-            "yyyy-MM-dd");
+        taskManager.addDeadlineTask("book", false, "2025-01-02", "yyyy-MM-dd");
         assertEquals(2, taskManager.getTaskCount());
-        taskManager.processCommand("event", "meeting", List.of("2025-01-02","2025-01-03"), false,
+        taskManager.addEventTask("meeting", false, "2025-01-02", "2025-01-03",
             "yyyy-MM-dd");
         assertEquals(3, taskManager.getTaskCount());
-        taskManager.processCommand("delete", "", List.of("1"), false,
-            "");
+        taskManager.deleteTask(1);
         assertEquals(2, taskManager.getTaskCount());
     }
 

@@ -6,11 +6,14 @@ package basilseed.exception;
 public class BasilSeedIoException extends BasilSeedException {
 
     /**
-     * Constructs a InvalidInputException with the specified message
+     * Constructs a BasilSeedIoException using the given parameters
      *
-     * @param message message to be read
+     * @param defaultPath the default path for the expected file
      */
-    public BasilSeedIoException(String message) {
-        super(message);
+    public BasilSeedIoException(String defaultPath) {
+        super(String.format("Something went Wrong with IO. "
+            + "Check your perms and file path!\n"
+            + "Default is at %s\n", defaultPath)
+        );
     }
 }

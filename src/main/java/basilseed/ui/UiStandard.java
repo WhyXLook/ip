@@ -33,7 +33,7 @@ public class UiStandard extends Ui {
     public String displayGreeting() {
         String greeting = " Hello! I'm BasilSeed \n"
             + " What can I do for you?\n";
-        return super.displayMessage(greeting);
+        return super.returnMessage(greeting);
     }
 
     /**
@@ -43,6 +43,6 @@ public class UiStandard extends Ui {
      */
     public String displayFarewell() {
         String farewell = "Bye. Hope to see you again soon! \n";
-        return super.displayMessage(farewell);
+        return super.returnMessage(farewell);
     }
 }

@@ -85,7 +85,6 @@ public class TaskManager {
     public String setTaskDone(int index, boolean done) throws BasilSeedIoException {
         this.tasks.get(index - 1).setDone(done);
         updateStorage();
-        String outMsg;
         return this.uiSuccess.displayTaskMarked(this.tasks.get(index - 1).toString(), done);
     }
 

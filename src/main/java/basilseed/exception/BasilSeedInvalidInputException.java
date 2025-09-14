@@ -6,7 +6,7 @@ package basilseed.exception;
 public class BasilSeedInvalidInputException extends BasilSeedException {
 
     /**
-     * Constructs a InvalidInputException with the specified message
+     * Constructs a BasilSeedInvalidInputException with the specified message
      *
      * @param message message to be read
      */

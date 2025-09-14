@@ -31,15 +31,7 @@ public abstract class Ui {
         this.isSilent = silent;
     }
 
-    public boolean getIsSilentStatus() {
-        return this.isSilent;
-    }
-
-    protected void displayLine() {
-        System.out.println("____________________________________________________________\n");
-    }
-
-    protected String displayMessage(String message) {
+    protected String returnMessage(String message) {
         if (!this.isSilent) {
             return message;
         }

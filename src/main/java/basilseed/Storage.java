@@ -16,9 +16,6 @@ import basilseed.exception.BasilSeedIoException;
  */
 public class Storage {
     public static final String DEFAULT_FILE_PATH = "./src/main/java/basilseed/data/tasks.txt";
-    private static final String IO_ERROR = String.format("Something went Wrong with IO. "
-        + "Check your perms and file path!\n"
-        + "Default is at %s\n", DEFAULT_FILE_PATH);
     private Path path;
 
 
@@ -30,23 +27,13 @@ public class Storage {
         createFileIfNotExists(DEFAULT_FILE_PATH);
     }
 
-    /**
-     * Creates a Storage instance with a specified file path.
-     *
-     * @param fileUrl Path to the storage file.
-     */
-    public Storage(String fileUrl) throws BasilSeedIoException {
-        this.path = Paths.get(fileUrl);
-        createFileIfNotExists(fileUrl);
-    }
-
     private static void createFileIfNotExists(String filePath) throws BasilSeedIoException {
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             try {
                 Files.createFile(path);
             } catch (IOException e) {
-                throw new BasilSeedIoException(IO_ERROR);
+                throw new BasilSeedIoException(DEFAULT_FILE_PATH);
             }
         }
     }
@@ -60,7 +47,7 @@ public class Storage {
         try {
             Files.write(this.path, lines);
         } catch (IOException e) {
-            throw new BasilSeedIoException(IO_ERROR);
+            throw new BasilSeedIoException(DEFAULT_FILE_PATH);
         }
     }
 
@@ -70,11 +57,11 @@ public class Storage {
      * @return List of strings read from storage.
      */
     public ArrayList<String> read() throws BasilSeedIoException {
-        List<String> lines = new ArrayList<>();
+        List<String> lines;
         try {
             lines = Files.readAllLines(this.path);
         } catch (IOException e) {
-            throw new BasilSeedIoException(IO_ERROR);
+            throw new BasilSeedIoException(DEFAULT_FILE_PATH);
         }
         ArrayList<String> outLines = new ArrayList<>(lines);
         return outLines;

@@ -7,9 +7,7 @@ import basilseed.exception.BasilSeedIoException;
 import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.TaskManager;
 
-import basilseed.ui.UiError;
 import basilseed.ui.UiStandard;
-import basilseed.ui.UiInputOutput;
 import basilseed.ui.UiSuccess;
 
 import basilseed.command.Command;
@@ -22,14 +20,17 @@ import basilseed.command.Command;
 public class BasilSeed {
     private final InputParser inputParser;
     private final TaskManager taskManager;
-    private final UiError uiError;
     private final UiStandard uiStandard;
     private final UiSuccess uiSuccess;
 
+    /**
+     * Creates a BasilSeedException
+     *
+     * @throws BasilSeedException
+     */
     public BasilSeed() throws BasilSeedException {
         this.uiSuccess = new UiSuccess();
         this.uiStandard = new UiStandard();
-        this.uiError = new UiError();
         this.inputParser = new InputParser();
         Storage storage = new Storage();
         this.taskManager = new TaskManager(uiSuccess, storage);
@@ -55,7 +56,7 @@ public class BasilSeed {
         ArrayList<String> taskStrings = storage.read();
         uiSuccess.setSilent(true);
         for (String taskString : taskStrings) {
-            Command command = inputParser.parse(taskString, taskManager.getTaskCount());
+            Command command = inputParser.parseFromStorage(taskString, taskManager.getTaskCount());
             command.execute(taskManager);
         }
         uiSuccess.setSilent(false);
@@ -76,7 +77,7 @@ public class BasilSeed {
      *
      * @return a farewell string
      */
-    public String getFarewell(){
+    public String getFarewell() {
         return this.uiStandard.displayFarewell();
     }
 
@@ -84,7 +85,7 @@ public class BasilSeed {
         try {
             Command command = this.inputParser.parse(userInput, taskManager.getTaskCount());
             return command.execute(taskManager);
-        } catch (BasilSeedException e){
+        } catch (BasilSeedException e) {
             return e.getMessage();
         }
     }
