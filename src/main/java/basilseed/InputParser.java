@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.Task;
@@ -37,9 +38,22 @@ public class InputParser {
     public InputParser() {
     }
 
+    private static void assertCommandVerified(String command) {
+        assert (command.equals("find")
+                || command.equals("list")
+                || command.equals("delete")
+                || command.equals("mark")
+                || command.equals("unmark")
+                || command.equals("todo")
+                || command.equals("deadline")
+                || command.equals("event")
+        );
+    }
+
     private void wrongArgNumCheck(List<String> wordsList, int argNum, String command)
             throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
+        assertCommandVerified(command);
         if (wordsList.size() <= argNum) {
             String outMsg = String.format("Wrong number of arguments. %s should have %d argument. \n",
                 command, argNum);
@@ -67,6 +81,7 @@ public class InputParser {
     private void taskNameNotFoundCheck(List<String> wordsList, String firstArgKeyword, String command)
             throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
+        assertCommandVerified(command);
         if (wordsList.indexOf(firstArgKeyword) == 1) {
             String outMsg = String.format(
                 "No task name detected. Provide one between the command %s and %s as an argument. \n",
@@ -78,6 +93,7 @@ public class InputParser {
     private void argKeywordNotFoundCheck(List<String> wordsList, String argKeyword, String command)
             throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
+        assertCommandVerified(command);
         if (!wordsList.contains(argKeyword)) {
             String outMsg = String.format(
                 "No '%s' detected. %s is a required argument for %s. \n" , argKeyword, argKeyword, command);
@@ -106,6 +122,7 @@ public class InputParser {
     private void noArgSupplied(List<String> wordsList, List<String> argKeywordList,
             String argKeyword, String argType, String command) throws BasilSeedInvalidInputException {
         // We are assuming command has already been verified.
+        assertCommandVerified(command);
         if ((wordsList.indexOf(argKeyword) + 1 == wordsList.size())
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 || argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
@@ -131,6 +148,7 @@ public class InputParser {
     private void markNotValidCheck(String inputString, String command, int bounds)
             throws BasilSeedInvalidInputException {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
+        assertCommandVerified(command);
         // We are assuming command has already been verified.
         int index = -1;
         wrongArgNumCheck(wordsList, 1, command);
