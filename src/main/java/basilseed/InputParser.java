@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import basilseed.exception.BasilSeedInvalidInputException;
 import basilseed.task.Task;
@@ -21,6 +20,7 @@ import basilseed.command.ListCommand;
 import basilseed.command.MarkCommand;
 import basilseed.command.ToDoCommand;
 import basilseed.command.UnMarkCommand;
+import basilseed.ui.UiError;
 
 /**
  * Parses and validates user input into commands, arguments, and task attributes.
@@ -30,7 +30,8 @@ import basilseed.command.UnMarkCommand;
 public class InputParser {
     private static final String STORAGE_DATE_FORMAT = Task.STORAGE_DATE_FORMAT;
     private static final String INPUT_DATE_FORMAT = Task.INPUT_DATE_FORMAT;
-
+    private static final int STORAGE_COMMAND_STRING_LENGTH = 3;
+    private UiError uiError = new UiError();
 
     /**
      * Creates an InputParser
@@ -55,9 +56,7 @@ public class InputParser {
         // We are assuming command has already been verified.
         assertCommandVerified(command);
         if (wordsList.size() <= argNum) {
-            String outMsg = String.format("Wrong number of arguments. %s should have %d argument. \n",
-                command, argNum);
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnWrongArgNum(command, argNum));
         }
     }
 
@@ -65,16 +64,13 @@ public class InputParser {
         try {
             int index = Integer.parseInt(wordsList.get(1));
         } catch (NumberFormatException e) {
-            String outMsg = String.format(
-                "Argument is not a number! \nExample usage: %s 2 \n", command);
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnArgNotInteger(command));
         }
     }
 
     private void indexOutOfBoundsCheck(int index, int bounds) throws BasilSeedInvalidInputException {
         if (index <= 0 || index > bounds) {
-            String outMsg = "Index out of bounds! Has to be more than zero and equal or less than task list size!\n";
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnIndexOutOfBounds());
         }
     }
 
@@ -83,10 +79,7 @@ public class InputParser {
         // We are assuming command has already been verified.
         assertCommandVerified(command);
         if (wordsList.indexOf(firstArgKeyword) == 1) {
-            String outMsg = String.format(
-                "No task name detected. Provide one between the command %s and %s as an argument. \n",
-                command, firstArgKeyword);
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnTaskNameNotFound(firstArgKeyword, command));
         }
     }
 
@@ -95,9 +88,7 @@ public class InputParser {
         // We are assuming command has already been verified.
         assertCommandVerified(command);
         if (!wordsList.contains(argKeyword)) {
-            String outMsg = String.format(
-                "No '%s' detected. %s is a required argument for %s. \n" , argKeyword, argKeyword, command);
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnArgKeywordNotFound(argKeyword, command));
         }
     }
 
@@ -111,9 +102,7 @@ public class InputParser {
                 continue; // likely is just argument to keyword
             }
             if (prevIndex >= index) {
-                String outMsg = "Wrong keyword order.\nKeywords in order: ";
-                outMsg = outMsg + String.join(" ", argKeywordList) + "\n";
-                throw new BasilSeedInvalidInputException(outMsg);
+                throw new BasilSeedInvalidInputException(this.uiError.returnArgKeywordOrderWrong(argKeywordList));
             }
             prevIndex = index;
         }
@@ -126,9 +115,7 @@ public class InputParser {
         if ((wordsList.indexOf(argKeyword) + 1 == wordsList.size())
                 // next line is basically checking if the next arg after the target keyword is another keyword
                 || argKeywordList.contains(wordsList.get(wordsList.indexOf(argKeyword) + 1))) {
-            String outMsg = String.format("No %s %s detected. Provide one after %s as an argument. \n",
-                    command, argType, argKeyword);
-            throw new BasilSeedInvalidInputException(outMsg);
+            throw new BasilSeedInvalidInputException(this.uiError.returnNoArgSupplied(argKeyword, argType, command));
         }
     }
 
@@ -159,21 +146,18 @@ public class InputParser {
 
     private String validDateType(String dateString) throws BasilSeedInvalidInputException {
         List<String> dateTypes = new ArrayList<>();
-        //formatters.add(DateTimeFormatter.ofPattern(STORAGE_DATE_FORMAT));
-        //formatters.add(DateTimeFormatter.ofPattern(INPUT_DATE_FORMAT));
         dateTypes.add(STORAGE_DATE_FORMAT);
         dateTypes.add(INPUT_DATE_FORMAT);
         for (String dateType : dateTypes) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateType);
             try {
-                LocalDate date = LocalDate.parse(dateString, formatter);
+                LocalDate.parse(dateString, formatter);
                 return dateType;
             } catch (DateTimeParseException e) {
                 // do nothing first because the other dates could be correct
             }
         }
-        String outMsg = "Wrong date format! Use yyyy-mm-dd e.g. 2019-05-10 \n";
-        throw new BasilSeedInvalidInputException(outMsg);
+        throw new BasilSeedInvalidInputException(this.uiError.returnInvalidDateType());
     }
 
     /**
@@ -182,7 +166,7 @@ public class InputParser {
      * @param inputString String representation of the task.
      * @return True if task is marked, false otherwise.
      */
-    public boolean isMarked(String inputString) {
+    private boolean isMarked(String inputString) {
         if (inputString.matches("\\[.\\]\\[X\\]")) {
             return true;
         }
@@ -197,7 +181,7 @@ public class InputParser {
      * @param argKeywords keywords that are used as signposts to parse the relevant arguments
      * @return List of argument values. Excludes the argument keywords and task name.
      */
-    public List<String> getAllArgs(String inputString, List<String> argKeywords) {
+    private List<String> getAllArgs(String inputString, List<String> argKeywords) {
         List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
         List<String> argKeywordArrayList = new ArrayList<>(argKeywords);
         argKeywordArrayList.add("");
@@ -207,6 +191,130 @@ public class InputParser {
             allArgs.add(arg);
         }
         return allArgs;
+    }
+
+    private Command parseList() {
+        return new ListCommand(List.of());
+    }
+
+    private Command parseMark(String inputString, String firstWord, int taskListSize)
+            throws BasilSeedInvalidInputException {
+        markNotValidCheck(inputString, firstWord, taskListSize);
+        List<String> allArgs = getAllArgs(inputString, MarkCommand.KEYWORDS);
+        return new MarkCommand(allArgs);
+    }
+
+    private Command parseUnMark(String inputString, String firstWord, int taskListSize)
+            throws BasilSeedInvalidInputException {
+        markNotValidCheck(inputString, firstWord, taskListSize);
+        List<String> allArgs = getAllArgs(inputString, MarkCommand.KEYWORDS);
+        return new UnMarkCommand(allArgs);
+    }
+
+    private void checkToDo(String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        wrongArgNumCheck(wordsList, 1, firstWord);
+    }
+
+    private Command processToDo(String inputString, List<String> wordsList) {
+        List<String> allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
+        boolean isDone = isMarked(inputString);
+        String taskName = getArg(wordsList, "", "");
+        return new ToDoCommand(allArgs, taskName, isDone);
+    }
+
+    private Command parseTodo(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        checkToDo(firstWord, wordsList);
+        return processToDo(inputString, wordsList);
+    }
+
+    private void checkDeadline(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        argKeywordNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
+        taskNameNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
+        noArgSupplied(wordsList, DeadlineCommand.KEYWORDS,
+            DeadlineCommand.KEYWORDS.get(0), "date", firstWord);
+        List<String> allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
+        validDateType(allArgs.get(0));
+    }
+
+    private Command processDeadline(String inputString, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        List<String> allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
+        String dateType = validDateType(allArgs.get(0));
+        boolean isDone = isMarked(inputString);
+        String taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
+        return new DeadlineCommand(allArgs, taskName, isDone, dateType);
+    }
+
+    private Command parseDeadline(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        checkDeadline(inputString, firstWord, wordsList);
+        return processDeadline(inputString, wordsList);
+    }
+
+    private void checkEvent(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
+        argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(1), firstWord);
+        taskNameNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
+        argKeywordOrderWrongCheck(wordsList, EventCommand.KEYWORDS);
+        noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(0), "date", firstWord);
+        noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(1), "date", firstWord);
+        List<String> allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
+        for (String arg : allArgs) {
+            validDateType(arg);
+        }
+    }
+
+    private Command processEvent(String inputString, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        List<String> allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
+        String dateType = "";
+        for (String arg : allArgs) {
+            dateType = validDateType(arg);
+        }
+        boolean isDone = isMarked(inputString);
+        String taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
+        return new EventCommand(allArgs, taskName, isDone, dateType);
+    }
+
+    private Command parseEvent(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        checkEvent(inputString, firstWord, wordsList);
+        return processEvent(inputString, wordsList);
+    }
+
+    private Command parseDelete(String inputString, String firstWord, List<String> wordsList, int taskListSize)
+            throws BasilSeedInvalidInputException {
+        wrongArgNumCheck(wordsList, 1, firstWord);
+        argNotIntegerCheck(firstWord, wordsList);
+        List<String> allArgs = getAllArgs(inputString, DeleteCommand.KEYWORDS);
+        int index = Integer.parseInt(allArgs.get(0));
+        indexOutOfBoundsCheck(index, taskListSize);
+        return new DeleteCommand(allArgs);
+    }
+
+    private Command parseFind(String inputString, String firstWord, List<String> wordsList)
+            throws BasilSeedInvalidInputException {
+        wrongArgNumCheck(wordsList, 1, firstWord);
+        List<String> allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
+        return new FindCommand(allArgs);
+    }
+
+
+    // TODO: Extract out the bottom part of parse to become parseStorage
+
+    private List<String> splitStringIntoList(String inputString){
+        return Arrays.asList(inputString.split("\\s+"));
+    }
+
+    private String takeFirstWord(List<String> wordsList) throws BasilSeedInvalidInputException {
+        if (wordsList.isEmpty()) {
+            throw new BasilSeedInvalidInputException(this.uiError.returnInvalidCommand());
+        }
+        return wordsList.get(0);
     }
 
     /**
@@ -225,95 +333,50 @@ public class InputParser {
         */
         // conversion from string arrays to List string Solution below inspired by
         // https://stackoverflow.com/questions/2607289/converting-array-to-list-in-java
-        List<String> wordsList = Arrays.asList(inputString.split("\\s+"));
-        if (wordsList.isEmpty()) {
-            String outMsg = "Woops, thats not a valid command. Try again! \n";
-            throw new BasilSeedInvalidInputException(outMsg);
-        }
-        String firstWord = wordsList.get(0);
-        String taskName = "";
-        String dateType = "";
-        List<String> allArgs;
-        boolean isDone = false;
-        int index = -1;
+        List<String> wordsList = splitStringIntoList(inputString);
+        String firstWord = takeFirstWord(wordsList);
         switch (firstWord) {
         case "list":
-            return new ListCommand(List.of());
+            return parseList();
         case "mark":
-            markNotValidCheck(inputString, firstWord, taskListSize);
-            allArgs = getAllArgs(inputString, MarkCommand.KEYWORDS);
-            System.out.println("Mark command all args: " + allArgs);
-            return new MarkCommand(allArgs);
+            return parseMark(inputString, firstWord, taskListSize);
         case "unmark":
-            markNotValidCheck(inputString, firstWord, taskListSize);
-            allArgs = getAllArgs(inputString, UnMarkCommand.KEYWORDS);
-            return new UnMarkCommand(allArgs);
+            return parseUnMark(inputString, firstWord, taskListSize);
         case "todo":
-            wrongArgNumCheck(wordsList, 1, firstWord);
-            allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
-            isDone = isMarked(inputString);
-            taskName = getArg(wordsList, "", "");
-            return new ToDoCommand(allArgs, taskName, isDone);
+            return parseTodo(inputString, firstWord, wordsList);
         case "deadline":
-            argKeywordNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
-            taskNameNotFoundCheck(wordsList, DeadlineCommand.KEYWORDS.get(0), firstWord);
-            noArgSupplied(wordsList, DeadlineCommand.KEYWORDS,
-                DeadlineCommand.KEYWORDS.get(0), "date", firstWord);
-            allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
-            dateType = validDateType(allArgs.get(0));
-            isDone = isMarked(inputString);
-            taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
-            return new DeadlineCommand(allArgs, taskName, isDone, dateType);
+            return parseDeadline(inputString, firstWord, wordsList);
         case "event":
-            argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
-            argKeywordNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(1), firstWord);
-            taskNameNotFoundCheck(wordsList, EventCommand.KEYWORDS.get(0), firstWord);
-            argKeywordOrderWrongCheck(wordsList, EventCommand.KEYWORDS);
-            noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(0), "date", firstWord);
-            noArgSupplied(wordsList, EventCommand.KEYWORDS, EventCommand.KEYWORDS.get(1), "date", firstWord);
-            allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
-            for (String arg : allArgs) {
-                dateType = validDateType(arg);
-            }
-            isDone = isMarked(inputString);
-            taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
-            return new EventCommand(allArgs, taskName, isDone, dateType);
+            return parseEvent(inputString, firstWord, wordsList);
         case "delete":
-            wrongArgNumCheck(wordsList, 1, firstWord);
-            argNotIntegerCheck(firstWord, wordsList);
-            allArgs = getAllArgs(inputString, DeleteCommand.KEYWORDS);
-            index = Integer.parseInt(allArgs.get(0));
-            indexOutOfBoundsCheck(index, taskListSize);
-            return new DeleteCommand(allArgs);
+            return parseDelete(inputString, firstWord, wordsList, taskListSize);
         case "find":
-            wrongArgNumCheck(wordsList, 1, firstWord);
-            allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
-            return new FindCommand(allArgs);
-        default:
-            if (firstWord.length() >= 3) {
-                switch (firstWord.substring(0, 3)) {
-                case "[T]":
-                    allArgs = getAllArgs(inputString, ToDoCommand.KEYWORDS);
-                    isDone = isMarked(inputString);
-                    taskName = getArg(wordsList, "", "");
-                    return new ToDoCommand(allArgs, taskName, isDone);
-                case "[E]":
-                    allArgs = getAllArgs(inputString, EventCommand.KEYWORDS);
-                    dateType = validDateType(allArgs.get(0));
-                    taskName = getArg(wordsList, "", EventCommand.KEYWORDS.get(0));
-                    return new EventCommand(allArgs, taskName, isDone, dateType);
-                case "[D]":
-                    allArgs = getAllArgs(inputString, DeadlineCommand.KEYWORDS);
-                    dateType = validDateType(allArgs.get(0));
-                    taskName = getArg(wordsList, "", DeadlineCommand.KEYWORDS.get(0));
-                    return new DeadlineCommand(allArgs, taskName, isDone, dateType);
-                default:
-                    String outMsg = "Woops, thats not a valid command. Try again! \n";
-                    throw new BasilSeedInvalidInputException(outMsg);
-                }
-            }
-            String outMsg = "Woops, thats not a valid command. Try again! \n";
-            throw new BasilSeedInvalidInputException(outMsg);
+            return parseFind(inputString, firstWord, wordsList);
+        default: // From invalid command.
+            throw new BasilSeedInvalidInputException(this.uiError.returnInvalidCommand());
+        }
+    }
+
+    /**
+     * Parses given input string from storage against the current task list size.
+     * Will only run checks.
+     *
+     * @param inputString User input.
+     * @param taskListSize Size of the task list.
+     * @return a Command object that can take in a task manager for execution, empty string otherwise.
+     */
+    public Command parseFromStorage(String inputString, int taskListSize) throws BasilSeedInvalidInputException {
+        List<String> wordsList = splitStringIntoList(inputString);
+        String firstWord = takeFirstWord(wordsList);
+        switch (firstWord.substring(0, STORAGE_COMMAND_STRING_LENGTH)) {
+        case "[T]":
+            return processToDo(inputString, wordsList);
+        case "[E]":
+            return processEvent(inputString, wordsList);
+        case "[D]":
+            return processDeadline(inputString, wordsList);
+        default: // should not happen as storage strings are all correct
+            throw new BasilSeedInvalidInputException(this.uiError.returnInvalidCommand());
         }
     }
 

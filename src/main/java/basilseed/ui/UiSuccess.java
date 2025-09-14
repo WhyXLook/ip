@@ -37,7 +37,7 @@ public class UiSuccess extends Ui {
         for (int i = 0; i < taskList.size(); i++) {
             outMsg = outMsg + (i + 1) + "." + taskList.get(i) + "\n";
         }
-        return super.displayMessage(outMsg);
+        return super.returnMessage(outMsg);
     }
 
     /**
@@ -54,7 +54,7 @@ public class UiSuccess extends Ui {
         } else {
             outMsg = "OK, I've marked this task as not done yet: " + taskString + "\n";
         }
-        return super.displayMessage(outMsg);
+        return super.returnMessage(outMsg);
     }
 
     /**
@@ -68,7 +68,7 @@ public class UiSuccess extends Ui {
         String outMsg = "Got it. I've added this task:\n"
             + taskString + "\n"
             + "Now you have " + totalTasks + " tasks in the list.\n";
-        return super.displayMessage(outMsg);
+        return super.returnMessage(outMsg);
     }
 
     /**
@@ -82,6 +82,6 @@ public class UiSuccess extends Ui {
         String outMsg = "Noted. I've removed this task:\n"
             + taskString + "\n"
             + "Now you have " + totalTasks + " tasks in the list.\n";
-        return super.displayMessage(outMsg);
+        return super.returnMessage(outMsg);
     }
 }

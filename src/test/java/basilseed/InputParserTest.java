@@ -1,66 +1,100 @@
 package basilseed;
 
+
+
+
+import basilseed.command.Command;
+import basilseed.exception.BasilSeedInvalidInputException;
+
+import basilseed.exception.BasilSeedIoException;
+import basilseed.task.Event;
+import basilseed.task.TaskManager;
+import basilseed.ui.UiSuccess;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
-import basilseed.ui.UiError;
-
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InputParserTest {
 
-    @Test
-    public void getDateType_success() {
-        UiError uiError = new UiError();
-        assertEquals("yyyy-MM-dd", new InputParser(uiError).getDateType(List.of("2025-12-11")));
-        assertEquals("yyyy-MM-dd", new InputParser(uiError).getDateType(List.of("2025-02-01")));
+    @BeforeEach
+    public void setup() {
+        Path path = Paths.get(Storage.DEFAULT_FILE_PATH);
+        try {
+            Files.write(path, List.of());
+        } catch (IOException e){
+            System.out.println("Error writing to file: " + e);
+        }
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Path path = Paths.get(Storage.DEFAULT_FILE_PATH);
+        try {
+            Files.write(path, List.of());
+        } catch (IOException e){
+            System.out.println("Error writing to file: " + e);
+        }
     }
 
     @Test
-    public void getDateType_failure() {
-        UiError uiError = new UiError();
+    public void dateType_failure() throws BasilSeedInvalidInputException {
         // single digit
-        assertEquals("", new InputParser(uiError).getDateType(List.of("2024-12-1")));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("deadline return book /by 2025-12-5", 0));
         // mon day swap
-        assertEquals("", new InputParser(uiError).getDateType(List.of("2024-13-01")));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("deadline return book /by 2025-13-01", 0));
         // space instead of dash
-        assertEquals("", new InputParser(uiError).getDateType(List.of("2024 12 1")));
-
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("deadline return book /by 2025 12 5", 0));
     }
 
     @Test
-    public void parse_success() {
-        UiError uiError = new UiError();
-        String taskString = "todo book";
-        assertEquals(taskString, new InputParser(uiError).parse(taskString, 0));
-        taskString = "event Random Task Name /from 2025-01-01 /to 2025-01-02";
-        assertEquals(taskString, new InputParser(uiError).parse(taskString, 1));
+    public void parse_success() throws BasilSeedInvalidInputException, BasilSeedIoException {
+        InputParser inputParser = new InputParser();
+        String taskString = "event test /from 2025-01-01 /to 2025-01-02";
+        Command command = inputParser.parse(taskString, 0);
+        UiSuccess  uiSuccess = new UiSuccess();
+        Storage storage = new Storage();
+        TaskManager taskManager = new TaskManager(uiSuccess, storage);
+        String result = command.execute(taskManager);
+        Event eventTask = new Event("test", "2025-01-01", "2025-01-02", "yyyy-MM-dd");
+        String eventString = eventTask.toString();
+        assertEquals(result, eventString);
     }
 
     @Test
     public void parse_failure() {
-        UiError uiError = new UiError();
-        String taskString = "todo";
         // wrong argNum / no arg
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("todo",0));
         // keyword not found
-        taskString = "event /from";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
-        taskString = "event /to";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event /from",0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event /to",0));
         // taskname not found
-        taskString = "event /from /to";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event /from /to",0));
         // arg keyword wrong order
-        taskString = "event hihi /to /from";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event hihi /to /from",0));
         // no arg supplied
-        taskString = "event heyho /from /to";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
-        taskString = "event heyho /from 2025-01-02 /to";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
-        taskString = "event heyho /from /to 2025-01-02";
-        assertEquals("", new InputParser(uiError).parse(taskString, 0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event heyho /from /to",0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event heyho /from 2025-01-02 /to",0));
+        assertThrows(BasilSeedInvalidInputException.class, () -> new InputParser()
+            .parse("event heyho /from /to 2025-01-02",0));
     }
 
 }

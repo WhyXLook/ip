@@ -26,7 +26,7 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setBasilSeed(basilSeed);  // inject the BasilSeed instance
+            fxmlLoader.<MainWindow>getController().setBasilSeed(basilSeed); // inject the BasilSeed instance
             stage.show();
         } catch (IOException | BasilSeedException e) {
             e.printStackTrace();
