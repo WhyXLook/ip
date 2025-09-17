@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import basilseed.exception.BasilSeedInvalidInputException;
-import basilseed.task.Task;
-
 import basilseed.command.Command;
+import basilseed.command.ArchiveCommand;
 import basilseed.command.DeadlineCommand;
 import basilseed.command.DeleteCommand;
 import basilseed.command.EventCommand;
@@ -20,6 +18,11 @@ import basilseed.command.ListCommand;
 import basilseed.command.MarkCommand;
 import basilseed.command.ToDoCommand;
 import basilseed.command.UnMarkCommand;
+
+import basilseed.exception.BasilSeedInvalidInputException;
+
+import basilseed.task.Task;
+
 import basilseed.ui.UiError;
 
 /**
@@ -194,7 +197,7 @@ public class InputParser {
     }
 
     private Command parseList() {
-        return new ListCommand(List.of());
+        return new ListCommand();
     }
 
     private Command parseMark(String inputString, String firstWord, int taskListSize)
@@ -303,6 +306,10 @@ public class InputParser {
         return new FindCommand(allArgs);
     }
 
+    private Command parseArchive() {
+        return new ArchiveCommand();
+    }
+
 
     // TODO: Extract out the bottom part of parse to become parseStorage
 
@@ -352,6 +359,8 @@ public class InputParser {
             return parseDelete(inputString, firstWord, wordsList, taskListSize);
         case "find":
             return parseFind(inputString, firstWord, wordsList);
+        case "archive":
+            return parseArchive();
         default: // From invalid command.
             throw new BasilSeedInvalidInputException(this.uiError.returnInvalidCommand());
         }
