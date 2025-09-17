@@ -16,6 +16,7 @@ import basilseed.exception.BasilSeedIoException;
  */
 public class Storage {
     public static final String DEFAULT_FILE_PATH = "./src/main/java/basilseed/data/tasks.txt";
+    public static final String ARCHIVE_FILE_PATH = "./src/main/java/basilseed/data/archive.txt";
     private Path path;
 
 
@@ -25,6 +26,16 @@ public class Storage {
     public Storage() throws BasilSeedIoException {
         this.path = Paths.get(DEFAULT_FILE_PATH);
         createFileIfNotExists(DEFAULT_FILE_PATH);
+    }
+
+    /**
+     * Creates a Storage instance with the specified file path.
+     *
+     * @param filePath filePath the storage object will be created for
+     */
+    public Storage(String filePath) throws BasilSeedIoException {
+        this.path = Paths.get(filePath);
+        createFileIfNotExists(filePath);
     }
 
     private static void createFileIfNotExists(String filePath) throws BasilSeedIoException {

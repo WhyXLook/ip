@@ -1,20 +1,21 @@
 package basilseed.command;
 
+import basilseed.exception.BasilSeedIoException;
 import basilseed.task.TaskManager;
 
 import java.util.List;
 
 /**
- * Represents a List command with arguments and execute function defined
+ * Represents an Archive command with arguments and execute function defined
  *
  */
-public class ListCommand extends Command {
+public class ArchiveCommand extends Command {
     public static final List<String> KEYWORDS = List.of("");
 
     /**
      * Constructs a List Command.
      */
-    public ListCommand() {
+    public ArchiveCommand() {
         super(List.of());
     }
 
@@ -25,7 +26,7 @@ public class ListCommand extends Command {
      *                    executes
      * @return result of command as a String
      */
-    public String execute(TaskManager taskManager) {
-        return taskManager.listTasks(taskManager.getAllTasks());
+    public String execute(TaskManager taskManager) throws BasilSeedIoException {
+        return taskManager.archiveTasks();
     }
 }

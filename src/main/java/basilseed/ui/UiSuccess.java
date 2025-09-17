@@ -84,4 +84,16 @@ public class UiSuccess extends Ui {
             + "Now you have " + totalTasks + " tasks in the list.\n";
         return super.returnMessage(outMsg);
     }
+
+    /**
+     * Displays the current list of tasks with their indices as archived
+     *
+     * @param taskList the list of task string representations
+     * @return a String of all tasks as their string representation
+     */
+    public String displayTasksArchived(List<String> taskList) {
+        String outMsg = displayTaskList(taskList);
+        outMsg = outMsg + "\n These tasks has been archived \n";
+        return super.returnMessage(outMsg);
+    }
 }

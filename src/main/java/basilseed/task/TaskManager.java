@@ -34,7 +34,7 @@ public class TaskManager {
             String taskString = task.toString();
             outputString.add(taskString);
         }
-        storage.write(outputString);
+        this.storage.write(outputString);
     }
 
     private String addTask(Task task, boolean isDone) throws BasilSeedIoException {
@@ -168,6 +168,22 @@ public class TaskManager {
             throws BasilSeedIoException {
         Task task = new Event(eventName, fromDate, toDate, dateType);
         return addTask(task, isDone);
+    }
+
+    /**
+     * Archives current task list by saving it to another file
+     * and then clear the current tasks in both TaskManager and the data file.
+     *
+     * @return a String stating tasks has been archived
+     * @throws BasilSeedIoException If an I/O error occurs while updating storage.
+     */
+    public String archiveTasks() throws BasilSeedIoException {
+        Storage archiveStorage = new Storage(Storage.ARCHIVE_FILE_PATH);
+        List<String> taskStringList = getAllTasks();
+        archiveStorage.write(taskStringList);
+        this.tasks.clear();
+        updateStorage();
+        return this.uiSuccess.displayTasksArchived(taskStringList);
     }
 
 
