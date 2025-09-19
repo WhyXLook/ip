@@ -15,8 +15,8 @@ import basilseed.exception.BasilSeedIoException;
  * Reads and writes tasks from a file.
  */
 public class Storage {
-    public static final String DEFAULT_FILE_PATH = "./src/main/java/basilseed/data/tasks.txt";
-    public static final String ARCHIVE_FILE_PATH = "./src/main/java/basilseed/data/archive.txt";
+    public static final String DEFAULT_FILE_PATH = "data/tasks.txt";
+    public static final String ARCHIVE_FILE_PATH = "data/archive.txt";
     private Path path;
 
 
@@ -26,6 +26,7 @@ public class Storage {
     public Storage() throws BasilSeedIoException {
         this.path = Paths.get(DEFAULT_FILE_PATH);
         createFileIfNotExists(DEFAULT_FILE_PATH);
+        createFileIfNotExists(ARCHIVE_FILE_PATH);
     }
 
     /**
@@ -42,6 +43,10 @@ public class Storage {
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             try {
+                Path parent = path.getParent();
+                if (parent != null && !Files.exists(parent)) {
+                    Files.createDirectories(parent);
+                }
                 Files.createFile(path);
             } catch (IOException e) {
                 throw new BasilSeedIoException(DEFAULT_FILE_PATH);
