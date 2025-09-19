@@ -313,7 +313,7 @@ public class InputParser {
 
     // TODO: Extract out the bottom part of parse to become parseStorage
 
-    private List<String> splitStringIntoList(String inputString){
+    private List<String> splitStringIntoList(String inputString) {
         return Arrays.asList(inputString.split("\\s+"));
     }
 
